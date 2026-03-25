@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rwanda Muslim Community (RMC)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rmc-green': '#059669', // Emerald 600
+                        'rmc-dark-green': '#064e3b', // Emerald 900
+                        'rmc-blue': '#1e40af', // Blue 800
+                        'rmc-black': '#111827',
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        arabic: ['Amiri', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Animations and Transitions */
+        .fade-in { animation: fadeIn 0.8s ease-in-out forwards; }
+        .slide-up { animation: slideUp 0.6s ease-out forwards; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cinematic Backgrounds */
+        .cinematic-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 1.5s ease-in-out;
+            z-index: -2;
+        }
+        .cinematic-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(17, 24, 39, 0.7), rgba(6, 78, 59, 0.8));
+            z-index: -1;
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Section hiding */
+        .page-section { display: none; }
+        .page-section.active { display: block; animation: fadeIn 0.5s ease; }
+
+        .board-circle {
+            width: 150px; height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #059669;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .board-circle:hover { transform: scale(1.05); }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #059669;
+            border-radius: 50%;
+            width: 30px; height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-rmc-black font-sans min-h-screen flex flex-col overflow-x-hidden">
+
+    <!-- Global Message Modal (Replaces Alerts) -->
+    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center fade-in">
+        <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4 shadow-2xl transform transition-all text-center">
+            <div id="modal-icon" class="text-4xl mb-4 text-rmc-green"><i class="fas fa-info-circle"></i></div>
+            <h3 id="modal-title" class="text-lg font-bold mb-2">Message</h3>
+            <p id="modal-message" class="text-gray-600 mb-6"></p>
+            <button onclick="closeModal()" class="bg-rmc-green text-white px-6 py-2 rounded-full font-semibold hover:bg-rmc-dark-green transition w-full">OK</button>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="main-nav" class="bg-white shadow-md sticky top-0 z-40 hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center cursor-pointer" onclick="navigateTo('home')">
+                    <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="RMC Logo" class="h-12 w-auto mr-3 rounded-full border border-gray-200">
+                    <div>
+                        <span class="font-bold text-xl text-rmc-dark-green block leading-tight">RMC</span>
+                        <span class="text-xs text-gray-500">Rwanda Muslim Community</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" onclick="navigateTo('home')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition">Home</a>
+                    <a href="#" onclick="navigateTo('programs')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition">Programs</a>
+                    <a href="#" onclick="navigateTo('announcements')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition">Announcements</a>
+                    <a href="#" onclick="navigateTo('about')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition">About Us</a>
+                    <a href="#" onclick="navigateTo('studio')" id="nav-studio-link" class="nav-link text-rmc-blue hover:text-blue-900 font-bold hidden transition"><i class="fas fa-cog mr-1"></i> Studio</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="user-greeting" class="text-sm font-medium text-gray-600 hidden md:block"></span>
+                    <button onclick="logout()" id="logout-btn" class="text-red-500 hover:text-red-700 font-medium text-sm border border-red-200 px-3 py-1 rounded-full hover:bg-red-50 transition">Logout</button>
+                    <!-- Mobile menu button -->
+                    <button class="md:hidden text-gray-500 hover:text-rmc-green focus:outline-none" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-2 pt-2 pb-4 space-y-1 shadow-inner">
+             <a href="#" onclick="navigateTo('home'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md">Home</a>
+             <a href="#" onclick="navigateTo('programs'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md">Programs</a>
+             <a href="#" onclick="navigateTo('announcements'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md">Announcements</a>
+             <a href="#" onclick="navigateTo('about'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md">About Us</a>
+             <a href="#" onclick="navigateTo('studio'); toggleMobileMenu()" id="mobile-studio-link" class="hidden block px-3 py-2 text-base font-medium text-rmc-blue hover:bg-blue-50 rounded-md">Studio</a>
+        </div>
+    </nav>
+
+    <main class="flex-grow relative">
+
+        <!-- ================= LANDING / LOGIN PAGE ================= -->
+        <section id="landing" class="page-section active h-screen flex items-center justify-center relative overflow-hidden">
+            <!-- Cinematic Backgrounds -->
+            <div id="bg-1" class="cinematic-bg opacity-100" style="background-image: url('https://i.postimg.cc/qqg0XNk7/EID_2024.jpg');"></div>
+            <div id="bg-2" class="cinematic-bg opacity-0" style="background-image: url('https://i.postimg.cc/c1tQTXr3/EID_2.jpg');"></div>
+            <div id="bg-3" class="cinematic-bg opacity-0" style="background-image: url('https://i.postimg.cc/9XwG1JrT/gathering_1.jpg');"></div>
+            <div class="cinematic-overlay"></div>
+
+            <div class="relative z-10 w-full max-w-5xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+                
+                <!-- Left Side: Islamic Content -->
+                <div class="text-white text-center md:text-left slide-up">
+                    <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="Logo" class="h-24 w-24 rounded-full border-4 border-white shadow-lg mx-auto md:mx-0 mb-6">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-4">Rwanda Muslim Community</h1>
+                    <p class="text-xl md:text-2xl text-gray-200 mb-8 font-light">Peace, Unity, and Development.</p>
+                    
+                    <div class="bg-black bg-opacity-40 p-6 rounded-lg border-l-4 border-rmc-green">
+                        <p id="daily-quote" class="font-arabic text-2xl md:text-3xl leading-loose mb-2">إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ</p>
+                        <p id="daily-translation" class="text-lg italic text-gray-300">"Indeed, Allah is with the patient." (Quran 2:153)</p>
+                    </div>
+                </div>
+
+                <!-- Right Side: Login Panel -->
+                <div class="glass-panel p-8 w-full max-w-md mx-auto slide-up" style="animation-delay: 0.2s;">
+                    <h2 class="text-2xl font-bold text-center text-rmc-dark-green mb-6">Welcome Back</h2>
+                    <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fas fa-envelope"></i></span>
+                                <input type="email" id="login-email" required class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rmc-green focus:border-transparent">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fas fa-lock"></i></span>
+                                <input type="password" id="login-password" required class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rmc-green focus:border-transparent">
+                            </div>
+                        </div>
+                        <button type="submit" id="login-btn" class="w-full bg-rmc-green text-white font-bold py-3 rounded-md hover:bg-rmc-dark-green transition shadow-md flex justify-center items-center">
+                            <span>Sign In</span>
+                        </button>
+                    </form>
+                    <div class="mt-6 text-center text-sm text-gray-600">
+                        Don't have an account? 
+                        <a href="#" onclick="navigateTo('signup')" class="text-rmc-blue font-bold hover:underline">Register Here</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SIGNUP PAGE ================= -->
+        <section id="signup" class="page-section bg-gray-100 py-12">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden slide-up">
+                    <div class="bg-rmc-dark-green text-white p-6 text-center relative">
+                        <button onclick="navigateTo('landing')" class="absolute left-6 top-6 text-white hover:text-gray-300"><i class="fas fa-arrow-left"></i> Back</button>
+                        <h2 class="text-3xl font-bold">Community Registration</h2>
+                        <p class="mt-2 text-rmc-green-100">Join the Rwanda Muslim Community network.</p>
+                    </div>
+                    
+                    <form id="signup-form" onsubmit="handleSignup(event)" class="p-8 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Personal Info -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">First Name</label>
+                                <input type="text" id="reg-firstname" required class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                                <input type="text" id="reg-lastname" required class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Father's Name</label>
+                                <input type="text" id="reg-fathername" required class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Gender</label>
+                                <select id="reg-gender" required class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2 bg-gray-50 p-3 rounded text-sm text-gray-600 text-center border border-gray-200">
+                                Your generated profile name will be: <br>
+                                <strong id="preview-name" class="text-rmc-green text-lg">---</strong>
+                            </div>
+
+                            <!-- Account Info -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Email Address</label>
+                                <input type="email" id="reg-email" required class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Password</label>
+                                <input type="password" id="reg-password" required minlength="6" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
+                            </div>
+
+                            <!-- Location Info -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Country</label>
+                                <input type="text" id="reg-country" value="Rwanda" readonly class="mt-1 w-full p-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Province</label>
+                                <select id="reg-province" required onchange="updateDistricts()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
+                                    <option value="">Select Province</option>
+                                    <option value="Kigali City">Kigali City</option>
+                                    <option value="Northern">Northern Province</option>
+                                    <option value="Southern">Southern Province</option>
+                                    <option value="Eastern">Eastern Province</option>
+                                    <option value="Western">Western Province</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">District</label>
+                                <select id="reg-district" required disabled onchange="updateSectors()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green bg-gray-50">
+                                    <option value="">Select Province First</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Sector</label>
+                                <select id="reg-sector" required disabled class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green bg-gray-50">
+                                    <option value="">Select District First</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" id="reg-btn" class="w-full bg-rmc-blue text-white font-bold py-3 rounded-md hover:bg-blue-900 transition shadow-md flex justify-center items-center">
+                                <span>Create Account</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= HOME PAGE ================= -->
+        <section id="home" class="page-section">
+            <!-- Hero -->
+            <div class="relative bg-rmc-dark-green text-white py-20 px-4">
+                <div class="absolute inset-0 z-0 opacity-20 bg-cover bg-center" style="background-image: url('https://i.postimg.cc/7hbDM5xH/EID_2025.jpg');"></div>
+                <div class="max-w-7xl mx-auto relative z-10 text-center slide-up">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Assalamu Alaikum</h1>
+                    <p class="text-xl max-w-2xl mx-auto text-gray-200">Welcome to the official portal of the Rwanda Muslim Community. Discover our programs, stay updated with announcements, and connect with the leadership.</p>
+                </div>
+            </div>
+
+            <!-- Leadership Board -->
+            <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 slide-up">
+                    <h2 class="text-3xl font-bold text-rmc-black mb-2">RMC Leadership Board</h2>
+                    <div class="w-24 h-1 bg-rmc-green mx-auto rounded"></div>
+                </div>
+
+                <!-- Top Leaders -->
+                <div class="flex flex-col items-center space-y-12 mb-16 slide-up" style="animation-delay: 0.2s;">
+                    <!-- Mufti -->
+                    <div class="text-center group">
+                        <img src="https://i.postimg.cc/yxnB0F4N/mufti.jpg" alt="Mufti" class="board-circle mx-auto border-rmc-green">
+                        <h3 class="mt-4 text-xl font-bold text-gray-900">Sheikh SINDAYIGAYA Mussa</h3>
+                        <p class="text-rmc-green font-semibold uppercase tracking-wide text-sm mt-1">Mufti of Rwanda</p>
+                    </div>
+                    <!-- Deputy -->
+                    <div class="text-center group">
+                        <img src="https://i.postimg.cc/cLS2dvVf/yunus.jpg" alt="Deputy Mufti" class="board-circle mx-auto border-rmc-blue" style="width: 130px; height: 130px;">
+                        <h3 class="mt-4 text-lg font-bold text-gray-900">Sheikh MUSHUMBA Yunus</h3>
+                        <p class="text-rmc-blue font-semibold uppercase tracking-wide text-sm mt-1">Deputy Mufti of Rwanda</p>
+                    </div>
+                </div>
+
+                <!-- Commissions -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10 slide-up" style="animation-delay: 0.4s;">
+                    <div class="text-center bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
+                        <img src="https://i.postimg.cc/vZskG4pf/ALLY.jpg" alt="Ameer" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 border-2 border-gray-200">
+                        <h3 class="font-bold text-gray-900">Sheikh BAKERA Ally</h3>
+                        <p class="text-gray-500 text-sm mt-1">Ameer of Foreigner Affairs</p>
+                    </div>
+                    <div class="text-center bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
+                        <img src="https://i.postimg.cc/sgrq3MtS/ISSA.jpg" alt="Ameer" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 border-2 border-gray-200">
+                        <h3 class="font-bold text-gray-900">BICAHAGA Hamidu</h3>
+                        <p class="text-gray-500 text-sm mt-1">Ameer of Development Planning</p>
+                    </div>
+                    <div class="text-center bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
+                        <img src="https://i.postimg.cc/3xTV3kP0/ABDALLAH.jpg" alt="Ameer" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 border-2 border-gray-200">
+                        <h3 class="font-bold text-gray-900">Bwana MURENZI Abdallah</h3>
+                        <p class="text-gray-500 text-sm mt-1">Ameer of Audit Commission</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Images Gallery -->
+            <div class="bg-gray-100 py-12">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <img src="https://i.postimg.cc/MT9qQ78Z/EID_2024_2.jpg" class="w-full h-40 object-cover rounded-lg shadow-sm hover:opacity-80 transition cursor-pointer">
+                        <img src="https://i.postimg.cc/Y2L18bht/MUSABAQAT_1.jpg" class="w-full h-40 object-cover rounded-lg shadow-sm hover:opacity-80 transition cursor-pointer">
+                        <img src="https://i.postimg.cc/NfhRnmHL/EID1.jpg" class="w-full h-40 object-cover rounded-lg shadow-sm hover:opacity-80 transition cursor-pointer">
+                        <img src="https://i.postimg.cc/7hbDM5xH/EID_2025.jpg" class="w-full h-40 object-cover rounded-lg shadow-sm hover:opacity-80 transition cursor-pointer">
+                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ABOUT US PAGE ================= -->
+        <section id="about" class="page-section bg-white py-16">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-rmc-black mb-2">About RMC</h2>
+                    <div class="w-24 h-1 bg-rmc-green mx-auto rounded"></div>
+                </div>
+
+                <div class="prose prose-lg text-gray-700 mx-auto space-y-8">
+                    <p>The <strong>Rwanda Muslim Community (RMC)</strong>, formerly known as the Association des Musulmans au Rwanda (AMUR), is the apex body representing the Islamic faith and interests in Rwanda. Historically a marginalized group, the community has seen a significant shift in its social and political standing in the decades following the 1994 Genocide against the Tutsi.</p>
+                    <p>The RMC is the primary organization representing the Islamic faith in Rwanda. Headquartered in Kigali, it operates under the leadership of the Mufti of Rwanda.</p>
+
+                    <h3 class="text-2xl font-bold text-rmc-dark-green border-b pb-2 mt-8">Historical Context and Evolution</h3>
+                    <p>The RMC has been central to the religious and social life of Muslims in Rwanda, providing a structured framework for worship and community development. A significant part of its modern history involves the effort to make sacred texts accessible to the Rwandan people in their native language, Kinyarwanda. This journey reached a major milestone with the publication of the first translation of the Quran in 2011, refined in 2020 for higher accuracy.</p>
+                    
+                    <h3 class="text-2xl font-bold text-rmc-dark-green border-b pb-2 mt-8">Mission and Vision</h3>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><strong>Spiritual Guidance:</strong> Providing a "path and guidance" for the inhabitants of the world through the teachings of the Quran.</li>
+                        <li><strong>Educational Advancement:</strong> Collaborating with international partners like the Africa Development and Education Foundation (ADEF) to improve religious literacy.</li>
+                        <li><strong>Community Support:</strong> Offering religious resources, such as the translated Quran, free of charge to the public.</li>
+                    </ul>
+
+                    <h3 class="text-2xl font-bold text-rmc-dark-green border-b pb-2 mt-8">The Translation of the Holy Quran</h3>
+                    <p>In partnership with ADEF, the RMC successfully completed two major versions:</p>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li><strong>The Older Version (2011):</strong> The first major attempt to bring meanings to Kinyarwanda speakers. Groundbreaking but required refinement.</li>
+                        <li><strong>The New Version (November 2020):</strong> A specialized committee worked from Feb 2014 to Nov 2020. Improved contextual accuracy, enhanced clarity with footnotes, and linguistic precision. Validated by over sixty scholars.</li>
+                    </ol>
+
+                    <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-rmc-blue my-8">
+                        <h4 class="font-bold text-lg mb-2">Acknowledgements</h4>
+                        <p class="text-sm">Led by Sheikh Hitimana Salim (former Mufti) and the Translation Committee led by Sheikh Mushumba Yunusu, with support from ADEF and the Islamic Cultural Center in Nyamirambo.</p>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-rmc-dark-green border-b pb-2 mt-8">Post-Genocide Growth & Future Vision</h3>
+                    <p>Since 1994, the Muslim population grew significantly as many Rwandans converted, citing the community's ethical stance during the genocide and commitment to peace. The current Strategic Plan (2024–2029) focuses on Unity, Dawah, Socio-economic development, infrastructure renovation, and governance reforms.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PROGRAMS PAGE ================= -->
+        <section id="programs" class="page-section bg-gray-50 py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-rmc-black mb-2">Our Key Programs</h2>
+                    <div class="w-24 h-1 bg-rmc-green mx-auto rounded"></div>
+                    <p class="mt-4 text-gray-600">Driving socio-economic development and spiritual growth.</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Edu -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+                        <div class="h-48 bg-rmc-blue flex items-center justify-center text-white text-5xl">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-3 text-rmc-dark-green">Education and Schools</h3>
+                            <p class="text-gray-600 text-sm">The RMC operates numerous private Islamic schools across Rwanda, such as Lycee Islamique de Rwamagana. These integrate the national curriculum (REB) with Islamic religious studies, managed via the digital "RMC Education" system.</p>
+                        </div>
+                    </div>
+                    <!-- Peace -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+                        <div class="h-48 bg-rmc-green flex items-center justify-center text-white text-5xl">
+                            <i class="fas fa-dove"></i>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-3 text-rmc-dark-green">Peace and Reconciliation</h3>
+                            <p class="text-gray-600 text-sm">A key partner in Rwanda’s "Ndi Umunyarwanda" initiative. Muslim leaders actively serve on national interfaith commissions, and host events like the International Qur'an Recitation Competition to promote cohesion.</p>
+                        </div>
+                    </div>
+                    <!-- Social -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+                        <div class="h-48 bg-black flex items-center justify-center text-white text-5xl">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-3 text-rmc-dark-green">Social & Cultural Life</h3>
+                            <p class="text-gray-600 text-sm">Organizing major Eid celebrations recognized nationally. Empowering Muslim youth to participate actively in monthly Umuganda (community work) focused on environmental protection and development.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ANNOUNCEMENTS PAGE ================= -->
+        <section id="announcements" class="page-section bg-white py-16 min-h-screen">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
+                <div class="flex justify-between items-end mb-12 border-b pb-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-rmc-black mb-2">Announcements & Events</h2>
+                        <div class="w-24 h-1 bg-rmc-green rounded"></div>
+                    </div>
+                    <div id="loading-announcements" class="hidden text-sm text-gray-500"><i class="fas fa-spinner fa-spin mr-1"></i> Syncing...</div>
+                </div>
+
+                <div id="announcements-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Dynamic Content Injected Here -->
+                    <div class="col-span-full text-center py-12 text-gray-400">Loading announcements...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= STUDIO (ADMIN) PAGE ================= -->
+        <section id="studio" class="page-section bg-gray-100 py-12 min-h-screen">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-10 border-t-8 border-rmc-blue">
+                    <div class="flex justify-between items-center mb-8">
+                        <div>
+                            <h2 class="text-3xl font-bold text-rmc-black">RMC Studio Dashboard</h2>
+                            <p class="text-gray-500">Manage announcements and content.</p>
+                        </div>
+                        <span class="bg-blue-100 text-rmc-blue px-3 py-1 rounded-full text-sm font-bold border border-blue-200">Admin Mode</span>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <!-- Add Form -->
+                        <div class="md:col-span-1 bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <h3 class="font-bold text-lg mb-4 border-b pb-2"><i class="fas fa-plus-circle text-rmc-green mr-2"></i>New Announcement</h3>
+                            <form id="studio-form" onsubmit="handlePublish(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700">Title</label>
+                                    <input type="text" id="post-title" required class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700">Content Description</label>
+                                    <textarea id="post-content" required rows="4" class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700">Direct Image/Drive Link</label>
+                                    <input type="url" id="post-image" placeholder="https://..." class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue">
+                                    <p class="text-[10px] text-gray-500 mt-1">Must be direct link. Use <a href="https://postimages.org/" target="_blank" class="text-blue-500 underline">postimages.org</a> if needed.</p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700">Expiration Date</label>
+                                    <input type="date" id="post-expire" required class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue">
+                                </div>
+                                <button type="submit" id="publish-btn" class="w-full bg-rmc-blue text-white font-bold py-2 rounded text-sm hover:bg-blue-900 transition flex justify-center items-center">
+                                    Publish Content
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Manage Existing -->
+                        <div class="md:col-span-2">
+                             <h3 class="font-bold text-lg mb-4 border-b pb-2"><i class="fas fa-tasks text-gray-600 mr-2"></i>Manage Active Content</h3>
+                             <div class="bg-white rounded border border-gray-200 overflow-hidden shadow-sm">
+                                 <ul id="studio-list" class="divide-y divide-gray-200 max-h-[500px] overflow-y-auto">
+                                     <li class="p-4 text-center text-gray-500 text-sm">Loading data...</li>
+                                 </ul>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-rmc-black text-white py-8 mt-auto hidden" id="main-footer">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="RMC Logo" class="h-10 w-10 rounded-full mr-3 border-2 border-gray-600">
+                <div>
+                    <span class="font-bold block">Rwanda Muslim Community</span>
+                    <span class="text-xs text-gray-400">rwandamuslimcommunity@gmail.com</span>
+                </div>
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter text-xl"></i> @islamrwanda</a>
+                <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook text-xl"></i></a>
+            </div>
+        </div>
+        <div class="text-center text-xs text-gray-500 mt-6 border-t border-gray-800 pt-4">
+            &copy; 2026 Rwanda Muslim Community. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Firebase Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot, deleteDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Environment Configuration Setup ensuring Canvas compliance while acknowledging user config
+        const environmentConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        
+        // User provided specific config, but in this specific Canvas iframe environment we must use
+        // the injected environment variables to prevent permission errors, falling back if not present.
+        const defaultFirebaseConfig = {
+          apiKey: "AIzaSyAl-HfUGEEqIgYWg_OGnfCGtX6OZ3EjIm8",
+          authDomain: "rwandamuslims.firebaseapp.com",
+          projectId: "rwandamuslims",
+          storageBucket: "rwandamuslims.firebasestorage.app",
+          messagingSenderId: "883688400075",
+          appId: "1:883688400075:web:60d1a0c0b28470b289e74e",
+          measurementId: "G-FLCEEMWZ1Q"
+        };
+        
+        const app = initializeApp(environmentConfig || defaultFirebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // Ensure strictly compliant paths for Canvas
+        const safeAppId = typeof __app_id !== 'undefined' ? __app_id : 'default-rmc-app';
+        const getCollectionPath = (name) => `artifacts/${safeAppId}/public/data/${name}`;
+
+        // Global State
+        window.RMC_STATE = {
+            currentUser: null,
+            isAdmin: false,
+            announcements: [],
+            dbReady: false
+        };
+
+        // Initialize Firebase Auth (Canvas requirement: MUST Auth before Firestore read/write)
+        async function initAuth() {
+            try {
+                await signInAnonymously(auth);
+                window.RMC_STATE.dbReady = true;
+                listenToAnnouncements();
+            } catch (error) {
+                console.error("Firebase Auth Error:", error);
+                showModal("Connection Error", "Could not connect to the secure database. Please refresh.");
+            }
+        }
+        initAuth();
+
+        // Data Listeners
+        let unsubscribeAnnouncements = null;
+        function listenToAnnouncements() {
+            const path = getCollectionPath('announcements');
+            const colRef = collection(db, path);
+            
+            document.getElementById('loading-announcements').classList.remove('hidden');
+            
+            unsubscribeAnnouncements = onSnapshot(colRef, (snapshot) => {
+                const data = [];
+                snapshot.forEach(doc => {
+                    data.push({ id: doc.id, ...doc.data() });
+                });
+                window.RMC_STATE.announcements = data;
+                renderAnnouncements();
+                renderStudioList();
+                document.getElementById('loading-announcements').classList.add('hidden');
+            }, (error) => {
+                console.error("Firestore error:", error);
+                document.getElementById('loading-announcements').classList.add('hidden');
+            });
+        }
+
+        // ================= APP LOGIC & UI =================
+
+        // Name Formatter
+        function formatIslamicName() {
+            const first = document.getElementById('reg-firstname').value.trim();
+            const last = document.getElementById('reg-lastname').value.trim();
+            const father = document.getElementById('reg-fathername').value.trim();
+            const gender = document.getElementById('reg-gender').value;
+
+            if (!first || !last) {
+                document.getElementById('preview-name').innerText = "---";
+                return "";
+            }
+
+            let name = `${first} ${last}`;
+            if (father && gender) {
+                const connector = gender === 'male' ? 'bin' : 'bint';
+                name += ` ${connector} ${father}`;
+            }
+            document.getElementById('preview-name').innerText = name;
+            return name;
+        }
+
+        // Listeners for live name preview
+        ['reg-firstname', 'reg-lastname', 'reg-fathername', 'reg-gender'].forEach(id => {
+            document.getElementById(id).addEventListener('input', formatIslamicName);
+            document.getElementById(id).addEventListener('change', formatIslamicName);
+        });
+
+        // Dropdown Logic (Mock Data for Rwanda)
+        const rwandaData = {
+            "Kigali City": {
+                "Gasabo": ["Kacyiru", "Remera", "Kimironko"],
+                "Kicukiro": ["Gikondo", "Kanombe", "Niboye"],
+                "Nyarugenge": ["Nyamirambo", "Kigali", "Gitega"]
+            },
+            "Northern": {
+                "Musanze": ["Muhoza", "Cyive", "Gacaca"],
+                "Gicumbi": ["Byumba", "Kageyo"]
+            },
+            "Southern": {
+                "Huye": ["Ngoma", "Tumba", "Mukura"],
+                "Muhanga": ["Nyamabuye", "Shyogwe"]
+            },
+            "Eastern": {
+                "Rwamagana": ["Kigabiro", "Fumbwe"],
+                "Bugesera": ["Nyamata", "Ntarama"]
+            },
+            "Western": {
+                "Rubavu": ["Gisenyi", "Rugerero"],
+                "Rusizi": ["Kamembe", "Gihundwe"]
+            }
+        };
+
+        window.updateDistricts = function() {
+            const prov = document.getElementById('reg-province').value;
+            const distSelect = document.getElementById('reg-district');
+            const sectSelect = document.getElementById('reg-sector');
+            
+            distSelect.innerHTML = '<option value="">Select District</option>';
+            sectSelect.innerHTML = '<option value="">Select Sector</option>';
+            sectSelect.disabled = true;
+
+            if (prov && rwandaData[prov]) {
+                Object.keys(rwandaData[prov]).forEach(dist => {
+                    distSelect.innerHTML += `<option value="${dist}">${dist}</option>`;
+                });
+                distSelect.disabled = false;
+                distSelect.classList.remove('bg-gray-50');
+            } else {
+                distSelect.disabled = true;
+                distSelect.classList.add('bg-gray-50');
+            }
+        };
+
+        window.updateSectors = function() {
+            const prov = document.getElementById('reg-province').value;
+            const dist = document.getElementById('reg-district').value;
+            const sectSelect = document.getElementById('reg-sector');
+            
+            sectSelect.innerHTML = '<option value="">Select Sector</option>';
+
+            if (prov && dist && rwandaData[prov][dist]) {
+                rwandaData[prov][dist].forEach(sect => {
+                    sectSelect.innerHTML += `<option value="${sect}">${sect}</option>`;
+                });
+                sectSelect.disabled = false;
+                sectSelect.classList.remove('bg-gray-50');
+            } else {
+                sectSelect.disabled = true;
+                sectSelect.classList.add('bg-gray-50');
+            }
+        };
+
+        // UI Navigation
+        window.navigateTo = function(pageId) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            // Manage Nav and Footer visibility
+            const nav = document.getElementById('main-nav');
+            const footer = document.getElementById('main-footer');
+            if (pageId === 'landing' || pageId === 'signup') {
+                nav.classList.add('hidden');
+                footer.classList.add('hidden');
+            } else {
+                nav.classList.remove('hidden');
+                footer.classList.remove('hidden');
+            }
+
+            // Security check for Studio
+            if (pageId === 'studio' && !window.RMC_STATE.isAdmin) {
+                showModal("Access Denied", "You must be an administrator to access the Studio.");
+                navigateTo('home');
+            }
+        };
+
+        // Authentication Handlers
+        window.handleLogin = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-btn');
+            
+            btn.innerHTML = '<div class="loader mr-2" style="width:20px;height:20px;border-width:3px;"></div> Authenticating...';
+            btn.disabled = true;
+
+            try {
+                // Admin Hardcoded Check
+                if (email === 'rwandamuslimcommunity@gmail.com' && pass === 'AllahAkbar-AllahAkbar-AllahAkbar') {
+                    setLoginState({ name: "RMC Admin", email: email }, true);
+                    navigateTo('studio');
+                    return;
+                }
+
+                // Normal User Check (Custom DB check to adhere to environment constraints)
+                if (!window.RMC_STATE.dbReady) throw new Error("Database not ready");
+                
+                const usersRef = collection(db, getCollectionPath('users'));
+                const q = query(usersRef, where("email", "==", email), where("password", "==", pass));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    const userData = querySnapshot.docs[0].data();
+                    setLoginState(userData, false);
+                    navigateTo('home');
+                } else {
+                    showModal("Login Failed", "Invalid email or password. Please try again or register.");
+                }
+            } catch (err) {
+                console.error(err);
+                showModal("Error", "An error occurred during login. Please try again.");
+            } finally {
+                btn.innerHTML = '<span>Sign In</span>';
+                btn.disabled = false;
+            }
+        };
+
+        window.handleSignup = async function(e) {
+            e.preventDefault();
+            if (!window.RMC_STATE.dbReady) {
+                showModal("Error", "Database connection not ready. Please refresh.");
+                return;
+            }
+
+            const islamicName = formatIslamicName();
+            if (!islamicName) {
+                showModal("Validation", "Please fill in names correctly."); return;
+            }
+
+            const email = document.getElementById('reg-email').value.trim();
+            const pass = document.getElementById('reg-password').value;
+            const btn = document.getElementById('reg-btn');
+            
+            btn.innerHTML = '<div class="loader mr-2" style="width:20px;height:20px;border-width:3px;"></div> Registering...';
+            btn.disabled = true;
+
+            try {
+                // Check if email exists
+                const usersRef = collection(db, getCollectionPath('users'));
+                const q = query(usersRef, where("email", "==", email));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                    showModal("Account Exists", "This email is already registered.");
+                    btn.innerHTML = '<span>Create Account</span>';
+                    btn.disabled = false;
+                    return;
+                }
+
+                // Save new user
+                const userData = {
+                    name: islamicName,
+                    email: email,
+                    password: pass, // In a real app, hash this. Used plaintext for demo per constraints.
+                    gender: document.getElementById('reg-gender').value,
+                    province: document.getElementById('reg-province').value,
+                    district: document.getElementById('reg-district').value,
+                    sector: document.getElementById('reg-sector').value,
+                    createdAt: new Date().toISOString()
+                };
+
+                await addDoc(usersRef, userData);
+                
+                showModal("Success!", "Registration complete! You will now be logged in.");
+                setLoginState(userData, false);
+                navigateTo('home');
+                document.getElementById('signup-form').reset();
+
+            } catch (err) {
+                console.error(err);
+                showModal("Error", "Could not complete registration.");
+            } finally {
+                btn.innerHTML = '<span>Create Account</span>';
+                btn.disabled = false;
+            }
+        };
+
+        function setLoginState(user, isAdmin) {
+            window.RMC_STATE.currentUser = user;
+            window.RMC_STATE.isAdmin = isAdmin;
+            
+            const greeting = document.getElementById('user-greeting');
+            greeting.innerText = `Ahlan, ${user.name}`;
+            greeting.classList.remove('hidden');
+
+            if (isAdmin) {
+                document.getElementById('nav-studio-link').classList.remove('hidden');
+                document.getElementById('mobile-studio-link').classList.remove('hidden');
+            } else {
+                document.getElementById('nav-studio-link').classList.add('hidden');
+                document.getElementById('mobile-studio-link').classList.add('hidden');
+            }
+        }
+
+        window.logout = function() {
+            window.RMC_STATE.currentUser = null;
+            window.RMC_STATE.isAdmin = false;
+            document.getElementById('login-form').reset();
+            navigateTo('landing');
+            document.getElementById('user-greeting').classList.add('hidden');
+            document.getElementById('nav-studio-link').classList.add('hidden');
+        };
+
+        // Studio Handlers
+        window.handlePublish = async function(e) {
+            e.preventDefault();
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+            const image = document.getElementById('post-image').value;
+            const expire = document.getElementById('post-expire').value;
+            const btn = document.getElementById('publish-btn');
+
+            if (image && !image.includes('postimg.cc') && !image.match(/\.(jpeg|jpg|gif|png)$/i)) {
+                showModal("Invalid Link", "Please use a direct image link (e.g. from postimages.org ending in .jpg).");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = 'Publishing...';
+
+            try {
+                const docData = {
+                    title, content, image, 
+                    expiration: new Date(expire).toISOString(),
+                    createdAt: new Date().toISOString()
+                };
+                
+                await addDoc(collection(db, getCollectionPath('announcements')), docData);
+                document.getElementById('studio-form').reset();
+                showModal("Success", "Announcement published successfully!");
+            } catch (err) {
+                console.error(err);
+                showModal("Error", "Failed to publish announcement.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Publish Content';
+            }
+        };
+
+        window.deleteAnnouncement = async function(id) {
+            try {
+                await deleteDoc(doc(db, getCollectionPath('announcements'), id));
+                // Modal not strictly necessary here, UI will just update due to onSnapshot
+            } catch (err) {
+                console.error(err);
+                showModal("Error", "Failed to delete.");
+            }
+        };
+
+        // Renderers
+        function renderAnnouncements() {
+            const container = document.getElementById('announcements-container');
+            const now = new Date();
+            
+            // Filter out expired ones
+            const active = window.RMC_STATE.announcements.filter(a => new Date(a.expiration) >= now)
+                .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            if (active.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                    <i class="fas fa-bullhorn text-4xl mb-3 text-gray-300"></i><br>
+                    No active announcements at this time.
+                </div>`;
+                return;
+            }
+
+            container.innerHTML = active.map(a => `
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition flex flex-col h-full border border-gray-100">
+                    ${a.image ? `<img src="${a.image}" alt="Event" class="w-full h-48 object-cover" onerror="this.src='https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg'; this.classList.add('p-4','bg-gray-50');">` : ''}
+                    <div class="p-6 flex-grow flex flex-col">
+                        <div class="text-xs text-rmc-green font-bold mb-2 uppercase tracking-wide">Ends: ${new Date(a.expiration).toLocaleDateString()}</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">${a.title}</h3>
+                        <p class="text-gray-600 text-sm mb-4 flex-grow whitespace-pre-line">${a.content}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderStudioList() {
+            const list = document.getElementById('studio-list');
+            const sorted = [...window.RMC_STATE.announcements].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const now = new Date();
+
+            if (sorted.length === 0) {
+                list.innerHTML = `<li class="p-4 text-center text-gray-500 text-sm">No announcements found.</li>`;
+                return;
+            }
+
+            list.innerHTML = sorted.map(a => {
+                const isExpired = new Date(a.expiration) < now;
+                return `
+                <li class="p-4 hover:bg-gray-50 flex justify-between items-center transition">
+                    <div class="flex-grow pr-4">
+                        <h4 class="font-bold text-sm text-gray-900 ${isExpired ? 'line-through text-gray-400' : ''}">${a.title}</h4>
+                        <p class="text-xs text-gray-500 truncate max-w-xs">${a.content}</p>
+                        <div class="text-[10px] mt-1 ${isExpired ? 'text-red-500 font-bold' : 'text-rmc-green'}">
+                            ${isExpired ? 'Expired' : 'Active until ' + new Date(a.expiration).toLocaleDateString()}
+                        </div>
+                    </div>
+                    <button onclick="deleteAnnouncement('${a.id}')" class="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-full transition" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </li>
+            `}).join('');
+        }
+
+        // --- Utility UI Functions ---
+        window.showModal = function(title, message) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            const icon = document.getElementById('modal-icon');
+            
+            if(title.toLowerCase().includes('error') || title.toLowerCase().includes('denied')) {
+                icon.innerHTML = '<i class="fas fa-exclamation-triangle text-red-500"></i>';
+            } else if (title.toLowerCase().includes('success')) {
+                icon.innerHTML = '<i class="fas fa-check-circle text-rmc-green"></i>';
+            } else {
+                icon.innerHTML = '<i class="fas fa-info-circle text-rmc-blue"></i>';
+            }
+            
+            document.getElementById('message-modal').classList.remove('hidden');
+        };
+
+        window.closeModal = function() {
+            document.getElementById('message-modal').classList.add('hidden');
+        };
+
+        window.toggleMobileMenu = function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        };
+
+        // Cinematic Background Fader
+        let currentBg = 1;
+        setInterval(() => {
+            const bgs = [document.getElementById('bg-1'), document.getElementById('bg-2'), document.getElementById('bg-3')];
+            if(!bgs[0]) return; // page not loaded
+            
+            bgs.forEach(bg => bg.style.opacity = '0');
+            currentBg = (currentBg % 3) + 1;
+            document.getElementById(`bg-${currentBg}`).style.opacity = '1';
+        }, 5000);
+
+    </script>
+</body>
+</html>
