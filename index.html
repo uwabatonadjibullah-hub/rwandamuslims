@@ -61,22 +61,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Cinematic Backgrounds */
-        .cinematic-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover;
-            background-position: center;
-            transition: opacity 1.5s ease-in-out;
-            z-index: -2;
-        }
-        .cinematic-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(17, 24, 39, 0.7), rgba(6, 78, 59, 0.8));
-            z-index: -1;
-        }
-
         /* Glassmorphism */
         .glass-panel {
             background: rgba(255, 255, 255, 0.95);
@@ -134,10 +118,6 @@
             transition: transform 0.5s ease;
         }
         .carousel-slide.active .carousel-content { transform: translateY(0); }
-        
-        /* Dynamic Quote Transitions */
-        .quote-text { transition: opacity 1s ease-in-out; }
-        .fade-out { opacity: 0 !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-rmc-black font-sans min-h-screen flex flex-col overflow-x-hidden">
@@ -173,7 +153,7 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <span id="user-greeting" class="text-sm font-medium text-gray-600 hidden md:block"></span>
-                    <button onclick="navigateTo('landing')" id="login-nav-btn" class="text-rmc-green hover:text-rmc-dark-green font-medium text-sm border border-rmc-green px-4 py-1.5 rounded-full hover:bg-green-50 transition"><i class="fas fa-sign-in-alt mr-1"></i> Login</button>
+                    <button onclick="navigateTo('login')" id="login-nav-btn" class="text-rmc-green hover:text-rmc-dark-green font-medium text-sm border border-rmc-green px-4 py-1.5 rounded-full hover:bg-green-50 transition"><i class="fas fa-sign-in-alt mr-1"></i> Login</button>
                     <button onclick="logout()" id="logout-btn" class="text-red-500 hover:text-red-700 font-medium text-sm border border-red-200 px-3 py-1 rounded-full hover:bg-red-50 transition hidden"><i class="fas fa-sign-out-alt mr-1"></i> Logout</button>
                     <!-- Mobile menu button -->
                     <button class="md:hidden text-gray-500 hover:text-rmc-green focus:outline-none" onclick="toggleMobileMenu()">
@@ -191,65 +171,50 @@
              <a href="#" onclick="navigateTo('events'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-calendar-alt mr-2 w-5"></i> Events</a>
              <a href="#" onclick="navigateTo('about'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-info-circle mr-2 w-5"></i> About Us</a>
              <a href="#" onclick="navigateTo('studio'); toggleMobileMenu()" id="mobile-studio-link" class="hidden block px-3 py-2 text-base font-medium text-rmc-blue hover:bg-blue-50 rounded-md"><i class="fas fa-cog mr-2 w-5"></i> Studio</a>
-             <button onclick="navigateTo('landing'); toggleMobileMenu()" id="mobile-login-btn" class="w-full text-left block px-3 py-2 text-base font-medium text-rmc-green hover:bg-green-50 rounded-md mt-2"><i class="fas fa-sign-in-alt mr-2 w-5"></i> Login</button>
+             <button onclick="navigateTo('login'); toggleMobileMenu()" id="mobile-login-btn" class="w-full text-left block px-3 py-2 text-base font-medium text-rmc-green hover:bg-green-50 rounded-md mt-2"><i class="fas fa-sign-in-alt mr-2 w-5"></i> Login</button>
              <button onclick="logout(); toggleMobileMenu()" id="mobile-logout-btn" class="hidden w-full text-left block px-3 py-2 text-base font-medium text-red-500 hover:bg-red-50 rounded-md mt-2"><i class="fas fa-sign-out-alt mr-2 w-5"></i> Logout</button>
         </div>
     </nav>
 
     <main class="flex-grow relative">
 
-        <!-- ================= LANDING / LOGIN PAGE ================= -->
-        <section id="landing" class="page-section min-h-screen py-24 flex items-center justify-center relative overflow-hidden">
-            <button type="button" onclick="navigateTo('home')" class="absolute z-50 left-6 top-6 text-white hover:text-gray-300 font-bold text-lg drop-shadow-md"><i class="fas fa-arrow-left mr-2"></i> Back to Home</button>
-            
-            <!-- Cinematic Backgrounds -->
-            <div id="bg-1" class="cinematic-bg opacity-100" style="background-image: url('https://i.postimg.cc/qqg0XNk7/EID_2024.jpg');"></div>
-            <div id="bg-2" class="cinematic-bg opacity-0" style="background-image: url('https://i.postimg.cc/c1tQTXr3/EID_2.jpg');"></div>
-            <div id="bg-3" class="cinematic-bg opacity-0" style="background-image: url('https://i.postimg.cc/9XwG1JrT/gathering_1.jpg');"></div>
-            <div class="cinematic-overlay"></div>
-
-            <div class="relative z-10 w-full max-w-5xl mx-auto px-4 grid md:grid-cols-2 gap-8 md:gap-12 items-center mt-10 md:mt-0">
-                
-                <!-- Left Side: Islamic Content -->
-                <div class="text-white text-center md:text-left slide-up">
-                    <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="Logo" class="h-20 w-20 md:h-24 md:w-24 rounded-full border-4 border-white shadow-lg mx-auto md:mx-0 mb-4 md:mb-6">
-                    <h1 class="text-3xl sm:text-4xl md:text-6xl font-bold mb-2 md:mb-4">Rwanda Muslim Community</h1>
-                    <p class="text-lg md:text-2xl text-gray-200 mb-6 md:mb-8 font-light">Peace, Unity, and Development.</p>
-                    
-                    <div class="bg-black bg-opacity-40 p-4 md:p-6 rounded-lg border-l-4 border-rmc-green min-h-[160px] flex flex-col justify-center">
-                        <p id="daily-quote" class="font-arabic text-xl sm:text-2xl md:text-3xl leading-loose mb-2 quote-text">إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ</p>
-                        <p id="daily-translation" class="text-base md:text-lg italic text-gray-300 quote-text">"Indeed, Allah is with the patient." (Quran 2:153)</p>
+        <!-- ================= LOGIN PAGE ================= -->
+        <section id="login" class="page-section bg-gray-100 py-12 min-h-screen flex items-center justify-center">
+            <div class="max-w-md w-full mx-auto px-4">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden slide-up">
+                    <div class="bg-rmc-dark-green text-white p-6 text-center relative">
+                        <button type="button" onclick="navigateTo('home')" class="absolute left-6 top-6 text-white hover:text-gray-300"><i class="fas fa-arrow-left mr-1"></i> Back</button>
+                        <h2 class="text-2xl font-bold">Welcome Back</h2>
+                        <p class="text-rmc-green-100 mt-1 text-sm">Sign in to the portal</p>
                     </div>
-                </div>
-
-                <!-- Right Side: Login Panel -->
-                <div class="glass-panel p-6 md:p-8 w-full max-w-md mx-auto slide-up mt-8 md:mt-0" style="animation-delay: 0.2s;">
-                    <h2 class="text-xl md:text-2xl font-bold text-center text-rmc-dark-green mb-6">Welcome Back</h2>
-                    <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fas fa-envelope"></i></span>
-                                <input type="email" id="login-email" required class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rmc-green focus:border-transparent">
+                    
+                    <div class="p-8">
+                        <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fas fa-envelope"></i></span>
+                                    <input type="email" id="login-email" required class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rmc-green focus:border-transparent">
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fas fa-lock"></i></span>
-                                <input type="password" id="login-password" required class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rmc-green focus:border-transparent">
-                                <button type="button" onclick="togglePassword('login-password', 'login-eye-icon')" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-rmc-green focus:outline-none">
-                                    <i class="fas fa-eye" id="login-eye-icon"></i>
-                                </button>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fas fa-lock"></i></span>
+                                    <input type="password" id="login-password" required class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rmc-green focus:border-transparent">
+                                    <button type="button" onclick="togglePassword('login-password', 'login-eye-icon')" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-rmc-green focus:outline-none">
+                                        <i class="fas fa-eye" id="login-eye-icon"></i>
+                                    </button>
+                                </div>
                             </div>
+                            <button type="submit" id="login-btn" class="w-full bg-rmc-green text-white font-bold py-3 rounded-md hover:bg-rmc-dark-green transition shadow-md flex justify-center items-center">
+                                <span>Sign In</span>
+                            </button>
+                        </form>
+                        <div class="mt-6 text-center text-sm text-gray-600">
+                            Don't have an account? 
+                            <a href="#" onclick="navigateTo('signup')" class="text-rmc-blue font-bold hover:underline">Register Here</a>
                         </div>
-                        <button type="submit" id="login-btn" class="w-full bg-rmc-green text-white font-bold py-3 rounded-md hover:bg-rmc-dark-green transition shadow-md flex justify-center items-center">
-                            <span>Sign In</span>
-                        </button>
-                    </form>
-                    <div class="mt-6 text-center text-sm text-gray-600">
-                        Don't have an account? 
-                        <a href="#" onclick="navigateTo('signup')" class="text-rmc-blue font-bold hover:underline">Register Here</a>
                     </div>
                 </div>
             </div>
@@ -260,7 +225,7 @@
             <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden slide-up">
                     <div class="bg-rmc-dark-green text-white p-6 text-center relative">
-                        <button type="button" onclick="navigateTo('landing')" class="absolute left-6 top-6 text-white hover:text-gray-300"><i class="fas fa-arrow-left"></i> Back</button>
+                        <button type="button" onclick="navigateTo('login')" class="absolute left-6 top-6 text-white hover:text-gray-300"><i class="fas fa-arrow-left"></i> Back</button>
                         <h2 class="text-3xl font-bold">Community Registration</h2>
                         <p class="mt-2 text-rmc-green-100">Join the Rwanda Muslim Community network.</p>
                     </div>
@@ -707,11 +672,9 @@
             announcements: []
         };
 
-        // Initialize Firebase Auth gracefully (Fixes the blocking Error Modal you saw)
+        // Initialize Firebase Auth gracefully
         async function initAuth() {
             try {
-                // Tries to connect securely. If Anonymous auth isn't enabled in your console, it fails silently, 
-                // but won't block the app! It will fall back to standard open rules if you set them.
                 await signInAnonymously(auth);
             } catch (error) {
                 console.warn("Firebase Anonymous Auth warning (app will continue without it):", error);
@@ -724,7 +687,6 @@
             if (savedUser) {
                 const user = JSON.parse(savedUser);
                 setLoginState(user, user.email === 'rwandamuslimcommunity@gmail.com');
-                // Removed the force-navigate to home here because Home is already the default now!
             }
         }
         initAuth();
@@ -858,7 +820,7 @@
         // UI Navigation Logic
         window.navigateTo = function(pageId) {
             // If user is logged in, restrict them from going back to the login page
-            if (pageId === 'landing' && window.RMC_STATE.currentUser !== null) {
+            if (pageId === 'login' && window.RMC_STATE.currentUser !== null) {
                 pageId = 'home';
             }
 
@@ -871,7 +833,7 @@
             const footer = document.getElementById('main-footer');
             
             // Hide nav/footer on pure login/signup pages
-            if (pageId === 'landing' || pageId === 'signup') {
+            if (pageId === 'login' || pageId === 'signup') {
                 nav.classList.add('hidden');
                 footer.classList.add('hidden');
             } else {
@@ -967,7 +929,7 @@
                 // User requirement: Display successful registration message and redirect to landing logic (Sign in component)
                 showModal("Success!", "Registration complete! Please sign in with your credentials.");
                 document.getElementById('signup-form').reset();
-                navigateTo('landing');
+                navigateTo('login');
 
             } catch (err) {
                 console.error(err);
@@ -1285,47 +1247,6 @@
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('hidden');
         };
-
-        // Cinematic Background Fader (Landing Page)
-        let landingBgIndex = 1;
-        setInterval(() => {
-            const bgs = [document.getElementById('bg-1'), document.getElementById('bg-2'), document.getElementById('bg-3')];
-            if(!bgs[0]) return;
-            bgs.forEach(bg => bg.style.opacity = '0');
-            landingBgIndex = (landingBgIndex % 3) + 1;
-            document.getElementById(`bg-${landingBgIndex}`).style.opacity = '1';
-        }, 5000);
-
-        // Dynamic Islamic Quotes Rotator
-        const islamicQuotes = [
-            { arabic: "إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ", translation: "\"Indeed, Allah is with the patient.\" (Quran 2:153)" },
-            { arabic: "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ", translation: "\"All praise is due to Allah, Lord of the worlds.\" (Quran 1:2)" },
-            { arabic: "خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ", translation: "\"The best among you are those who learn the Quran and teach it.\" (Hadith Bukhari)" },
-            { arabic: "إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ", translation: "\"Verily, actions are judged by intentions.\" (Hadith Bukhari & Muslim)" },
-            { arabic: "وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ", translation: "\"And He is with you wherever you are.\" (Quran 57:4)" }
-        ];
-        
-        let quoteIndex = 0;
-        setInterval(() => {
-            const quoteEl = document.getElementById('daily-quote');
-            const transEl = document.getElementById('daily-translation');
-            if(!quoteEl || !transEl) return;
-            
-            // Trigger Fade Out
-            quoteEl.classList.add('fade-out');
-            transEl.classList.add('fade-out');
-            
-            setTimeout(() => {
-                // Change Text Content
-                quoteIndex = (quoteIndex + 1) % islamicQuotes.length;
-                quoteEl.innerText = islamicQuotes[quoteIndex].arabic;
-                transEl.innerText = islamicQuotes[quoteIndex].translation;
-                
-                // Trigger Fade In
-                quoteEl.classList.remove('fade-out');
-                transEl.classList.remove('fade-out');
-            }, 1000); // Matches the CSS transition duration
-        }, 8000);
 
         // Home Page Carousel Logic
         let carouselInterval;
