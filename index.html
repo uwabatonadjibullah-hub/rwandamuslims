@@ -167,6 +167,7 @@
                     <a href="#" onclick="navigateTo('home')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-home mr-1"></i> Home</a>
                     <a href="#" onclick="navigateTo('programs')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-hand-holding-heart mr-1"></i> Programs</a>
                     <a href="#" onclick="navigateTo('announcements')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-bullhorn mr-1"></i> Announcements</a>
+                    <a href="#" onclick="navigateTo('events')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-calendar-alt mr-1"></i> Events</a>
                     <a href="#" onclick="navigateTo('about')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-info-circle mr-1"></i> About Us</a>
                     <a href="#" onclick="navigateTo('studio')" id="nav-studio-link" class="nav-link text-rmc-blue hover:text-blue-900 font-bold hidden transition"><i class="fas fa-cog mr-1"></i> Studio</a>
                 </div>
@@ -186,6 +187,7 @@
              <a href="#" onclick="navigateTo('home'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-home mr-2 w-5"></i> Home</a>
              <a href="#" onclick="navigateTo('programs'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-hand-holding-heart mr-2 w-5"></i> Programs</a>
              <a href="#" onclick="navigateTo('announcements'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-bullhorn mr-2 w-5"></i> Announcements</a>
+             <a href="#" onclick="navigateTo('events'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-calendar-alt mr-2 w-5"></i> Events</a>
              <a href="#" onclick="navigateTo('about'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-info-circle mr-2 w-5"></i> About Us</a>
              <a href="#" onclick="navigateTo('studio'); toggleMobileMenu()" id="mobile-studio-link" class="hidden block px-3 py-2 text-base font-medium text-rmc-blue hover:bg-blue-50 rounded-md"><i class="fas fa-cog mr-2 w-5"></i> Studio</a>
              <button onclick="logout(); toggleMobileMenu()" id="mobile-logout-btn" class="hidden w-full text-left block px-3 py-2 text-base font-medium text-red-500 hover:bg-red-50 rounded-md mt-2"><i class="fas fa-sign-out-alt mr-2 w-5"></i> Logout</button>
@@ -211,7 +213,7 @@
                     <p class="text-lg md:text-2xl text-gray-200 mb-6 md:mb-8 font-light">Peace, Unity, and Development.</p>
                     
                     <div class="bg-black bg-opacity-40 p-4 md:p-6 rounded-lg border-l-4 border-rmc-green min-h-[160px] flex flex-col justify-center">
-                        <p id="daily-quote" class="font-arabic text-xl sm:text-2xl md:text-3xl leading-loose mb-2 quote-text">إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ</p>
+                        <p id="daily-quote" class="font-arabic text-xl sm:text-2xl md:text-3xl leading-loose mb-2 quote-text">إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ</p>
                         <p id="daily-translation" class="text-base md:text-lg italic text-gray-300 quote-text">"Indeed, Allah is with the patient." (Quran 2:153)</p>
                     </div>
                 </div>
@@ -532,8 +534,9 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
                 <div class="flex justify-between items-end mb-12 border-b pb-4">
                     <div>
-                        <h2 class="text-3xl font-bold text-rmc-black mb-2">Announcements & Events</h2>
+                        <h2 class="text-3xl font-bold text-rmc-black mb-2">Community Announcements</h2>
                         <div class="w-24 h-1 bg-rmc-green rounded"></div>
+                        <p class="text-gray-500 mt-2">Stay updated with official news from the community.</p>
                     </div>
                     <div id="loading-announcements" class="hidden text-sm text-gray-500"><i class="fas fa-spinner fa-spin mr-1"></i> Syncing...</div>
                 </div>
@@ -541,6 +544,31 @@
                 <div id="announcements-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <!-- Dynamic Content Injected Here -->
                     <div class="col-span-full text-center py-12 text-gray-400">Loading content...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= EVENTS PAGE ================= -->
+        <section id="events" class="page-section bg-white py-16 min-h-screen">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
+                <div class="flex justify-between items-end mb-8 border-b pb-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-rmc-black mb-2">Events & Gatherings</h2>
+                        <div class="w-24 h-1 bg-rmc-blue rounded"></div>
+                        <p class="text-gray-500 mt-2">Discover upcoming gatherings and look back at past events.</p>
+                    </div>
+                </div>
+
+                <!-- Upcoming Events Container -->
+                <h3 class="text-2xl font-bold text-rmc-dark-green mb-6 flex items-center"><i class="fas fa-calendar-check mr-3"></i> Upcoming Events</h3>
+                <div id="upcoming-events-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                    <!-- Dynamic Content -->
+                </div>
+
+                <!-- Past Events Container -->
+                <h3 class="text-2xl font-bold text-gray-600 mb-6 flex items-center"><i class="fas fa-history mr-3"></i> Past Events</h3>
+                <div id="past-events-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 opacity-80">
+                    <!-- Dynamic Content -->
                 </div>
             </div>
         </section>
@@ -593,7 +621,7 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700">Expiration Date</label>
+                                    <label class="block text-xs font-medium text-gray-700">Expiration / Event End Date</label>
                                     <input type="date" id="post-expire" required class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue">
                                 </div>
                                 
@@ -605,7 +633,7 @@
 
                         <!-- Manage Existing -->
                         <div class="md:col-span-2">
-                             <h3 class="font-bold text-lg mb-4 border-b pb-2"><i class="fas fa-tasks text-gray-600 mr-2"></i>Manage Active Content</h3>
+                             <h3 class="font-bold text-lg mb-4 border-b pb-2"><i class="fas fa-tasks text-gray-600 mr-2"></i>Manage Content</h3>
                              <div class="bg-white rounded border border-gray-200 overflow-hidden shadow-sm">
                                  <ul id="studio-list" class="divide-y divide-gray-200 max-h-[500px] overflow-y-auto">
                                      <li class="p-4 text-center text-gray-500 text-sm">Loading data...</li>
@@ -713,7 +741,7 @@
                         data.push({ id: doc.id, ...doc.data() });
                     });
                     window.RMC_STATE.announcements = data;
-                    renderAnnouncements();
+                    renderContent(); // Renders Events and Announcements
                     renderStudioList();
                     updateHomeCarousel(); // Update carousel dynamically
                     document.getElementById('loading-announcements').classList.add('hidden');
@@ -826,11 +854,13 @@
 
         // UI Navigation Logic
         window.navigateTo = function(pageId) {
-            // If user is logged in, restrict them from going back to the landing page.
+            // If user is logged in, restrict them from going back to the landing page (which has the Login Form).
+            // This strictly implements "after signing in, user should not see welcome back component".
             if (pageId === 'landing' && window.RMC_STATE.currentUser !== null) {
                 pageId = 'home';
             }
 
+            // Hide all sections, display only the requested one
             document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             
@@ -932,11 +962,10 @@
 
                 await addDoc(usersRef, userData);
                 
-                sessionStorage.setItem('rmc_user', JSON.stringify(userData));
-                showModal("Success!", "Registration complete! Welcome to the portal.");
-                setLoginState(userData, false);
-                navigateTo('home');
+                // User requirement: Display successful registration message and redirect to landing logic (Sign in component)
+                showModal("Success!", "Registration complete! Please sign in with your credentials.");
                 document.getElementById('signup-form').reset();
+                navigateTo('landing');
 
             } catch (err) {
                 console.error(err);
@@ -1072,45 +1101,85 @@
         };
 
         // Renderers
-        function renderAnnouncements() {
+        function renderContent() {
+            renderAnnouncementsList();
+            renderEventsList();
+        }
+
+        function renderAnnouncementsList() {
             const container = document.getElementById('announcements-container');
             const now = new Date();
             
-            // Filter active announcements/events
-            const active = window.RMC_STATE.announcements.filter(a => new Date(a.expiration) >= now)
+            // Filter active announcements
+            const active = window.RMC_STATE.announcements
+                .filter(a => a.type === 'announcement' && new Date(a.expiration) >= now)
                 .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
 
             if (active.length === 0) {
                 container.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-300">
                     <i class="fas fa-bullhorn text-4xl mb-3 text-gray-300"></i><br>
-                    No active announcements or events at this time.
+                    No active announcements at this time.
                 </div>`;
                 return;
             }
 
-            container.innerHTML = active.map(a => {
-                const primaryImage = (a.images && a.images.length > 0) ? a.images[0] : (a.image ? a.image : null);
-                const tagColor = a.type === 'event' ? 'bg-rmc-blue' : 'bg-rmc-green';
-                
-                return `
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition flex flex-col h-full border border-gray-100">
-                    ${primaryImage ? `<img src="${primaryImage}" alt="Cover" class="w-full h-48 object-cover" onerror="this.src='https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg'; this.classList.add('p-4','bg-gray-50');">` : ''}
-                    <div class="p-6 flex-grow flex flex-col">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="${tagColor} text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">${a.type || 'Announcement'}</span>
-                            <span class="text-xs text-gray-500 font-semibold"><i class="fas fa-hourglass-half mr-1"></i> Ends ${new Date(a.expiration).toLocaleDateString()}</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-3">${a.title}</h3>
-                        <p class="text-gray-600 text-sm mb-4 flex-grow whitespace-pre-line">${a.content}</p>
-                        
-                        ${(a.images && a.images.length > 1) ? `
-                        <div class="mt-2 flex space-x-2 overflow-x-auto pb-2 scrollbar-hide">
-                            ${a.images.slice(1).map(img => `<img src="${img}" class="h-12 w-16 object-cover rounded border border-gray-200">`).join('')}
-                        </div>
-                        ` : ''}
+            container.innerHTML = active.map(a => generateCardHTML(a, 'bg-rmc-green')).join('');
+        }
+
+        function renderEventsList() {
+            const upcomingContainer = document.getElementById('upcoming-events-container');
+            const pastContainer = document.getElementById('past-events-container');
+            const now = new Date();
+            
+            // Filter all events
+            const allEvents = window.RMC_STATE.announcements
+                .filter(a => a.type === 'event')
+                .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            const upcoming = allEvents.filter(a => new Date(a.expiration) >= now);
+            const past = allEvents.filter(a => new Date(a.expiration) < now);
+
+            // Upcoming Events
+            if (upcoming.length === 0) {
+                upcomingContainer.innerHTML = `<div class="col-span-full text-center py-8 text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                    <i class="fas fa-calendar-times text-3xl mb-3 text-gray-300"></i><br>
+                    No upcoming events scheduled.
+                </div>`;
+            } else {
+                upcomingContainer.innerHTML = upcoming.map(a => generateCardHTML(a, 'bg-rmc-blue')).join('');
+            }
+
+            // Past Events
+            if (past.length === 0) {
+                pastContainer.innerHTML = `<div class="col-span-full text-center py-8 text-gray-400">
+                    No past events to show.
+                </div>`;
+            } else {
+                pastContainer.innerHTML = past.map(a => generateCardHTML(a, 'bg-gray-500')).join('');
+            }
+        }
+
+        // Helper to generate Card HTML for Announcements and Events
+        function generateCardHTML(a, tagColor) {
+            const primaryImage = (a.images && a.images.length > 0) ? a.images[0] : (a.image ? a.image : null);
+            return `
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition flex flex-col h-full border border-gray-100">
+                ${primaryImage ? `<img src="${primaryImage}" alt="Cover" class="w-full h-48 object-cover" onerror="this.src='https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg'; this.classList.add('p-4','bg-gray-50');">` : ''}
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="${tagColor} text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">${a.type || 'Announcement'}</span>
+                        <span class="text-xs text-gray-500 font-semibold"><i class="fas fa-hourglass-half mr-1"></i> ${a.type === 'event' ? 'Date:' : 'Ends'} ${new Date(a.expiration).toLocaleDateString()}</span>
                     </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">${a.title}</h3>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow whitespace-pre-line">${a.content}</p>
+                    
+                    ${(a.images && a.images.length > 1) ? `
+                    <div class="mt-2 flex space-x-2 overflow-x-auto pb-2 scrollbar-hide">
+                        ${a.images.slice(1).map(img => `<img src="${img}" class="h-12 w-16 object-cover rounded border border-gray-200">`).join('')}
+                    </div>
+                    ` : ''}
                 </div>
-            `}).join('');
+            </div>`;
         }
 
         function renderStudioList() {
@@ -1134,7 +1203,7 @@
                         </div>
                         <p class="text-xs text-gray-500 truncate max-w-xs">${a.content}</p>
                         <div class="text-[10px] mt-1 ${isExpired ? 'text-red-500 font-bold' : 'text-gray-500 font-medium'}">
-                            ${isExpired ? 'Expired' : 'Active until ' + new Date(a.expiration).toLocaleDateString()}
+                            ${isExpired ? 'Past Event/Expired' : 'Active until ' + new Date(a.expiration).toLocaleDateString()}
                             ${a.images && a.images.length > 0 ? ` &bull; ${a.images.length} Image(s)` : ''}
                         </div>
                     </div>
@@ -1178,7 +1247,7 @@
             document.getElementById('modal-message').innerText = message;
             const icon = document.getElementById('modal-icon');
             
-            if(title.toLowerCase().includes('error') || title.toLowerCase().includes('denied') || title.toLowerCase().includes('failed')) {
+            if(title.toLowerCase().includes('error') || title.toLowerCase().includes('denied') || title.toLowerCase().includes('failed') || title.toLowerCase().includes('exists')) {
                 icon.innerHTML = '<i class="fas fa-exclamation-triangle text-red-500"></i>';
             } else if (title.toLowerCase().includes('success')) {
                 icon.innerHTML = '<i class="fas fa-check-circle text-rmc-green"></i>';
@@ -1210,10 +1279,10 @@
 
         // Dynamic Islamic Quotes Rotator
         const islamicQuotes = [
-            { arabic: "إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ", translation: "\"Indeed, Allah is with the patient.\" (Quran 2:153)" },
-            { arabic: "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ", translation: "\"All praise is due to Allah, Lord of the worlds.\" (Quran 1:2)" },
-            { arabic: "خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ", translation: "\"The best among you are those who learn the Quran and teach it.\" (Hadith Bukhari)" },
-            { arabic: "إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ", translation: "\"Verily, actions are judged by intentions.\" (Hadith Bukhari & Muslim)" },
+            { arabic: "إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ", translation: "\"Indeed, Allah is with the patient.\" (Quran 2:153)" },
+            { arabic: "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ", translation: "\"All praise is due to Allah, Lord of the worlds.\" (Quran 1:2)" },
+            { arabic: "خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ", translation: "\"The best among you are those who learn the Quran and teach it.\" (Hadith Bukhari)" },
+            { arabic: "إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ", translation: "\"Verily, actions are judged by intentions.\" (Hadith Bukhari & Muslim)" },
             { arabic: "وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ", translation: "\"And He is with you wherever you are.\" (Quran 57:4)" }
         ];
         
