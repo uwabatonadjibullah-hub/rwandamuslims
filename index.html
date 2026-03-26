@@ -134,6 +134,10 @@
             transition: transform 0.5s ease;
         }
         .carousel-slide.active .carousel-content { transform: translateY(0); }
+        
+        /* Dynamic Quote Transitions */
+        .quote-text { transition: opacity 1s ease-in-out; }
+        .fade-out { opacity: 0 !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-rmc-black font-sans min-h-screen flex flex-col overflow-x-hidden">
@@ -178,43 +182,43 @@
         </div>
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-2 pt-2 pb-4 space-y-1 shadow-inner">
+             <span id="mobile-user-greeting" class="block px-3 py-2 text-sm font-bold text-rmc-dark-green hidden border-b border-gray-100 mb-2"></span>
              <a href="#" onclick="navigateTo('home'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-home mr-2 w-5"></i> Home</a>
              <a href="#" onclick="navigateTo('programs'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-hand-holding-heart mr-2 w-5"></i> Programs</a>
              <a href="#" onclick="navigateTo('announcements'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-bullhorn mr-2 w-5"></i> Announcements</a>
              <a href="#" onclick="navigateTo('about'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-info-circle mr-2 w-5"></i> About Us</a>
              <a href="#" onclick="navigateTo('studio'); toggleMobileMenu()" id="mobile-studio-link" class="hidden block px-3 py-2 text-base font-medium text-rmc-blue hover:bg-blue-50 rounded-md"><i class="fas fa-cog mr-2 w-5"></i> Studio</a>
+             <button onclick="logout(); toggleMobileMenu()" id="mobile-logout-btn" class="hidden w-full text-left block px-3 py-2 text-base font-medium text-red-500 hover:bg-red-50 rounded-md mt-2"><i class="fas fa-sign-out-alt mr-2 w-5"></i> Logout</button>
         </div>
     </nav>
 
     <main class="flex-grow relative">
 
         <!-- ================= LANDING / LOGIN PAGE ================= -->
-        <section id="landing" class="page-section active h-screen flex items-center justify-center relative overflow-hidden">
+        <section id="landing" class="page-section active min-h-screen py-24 flex items-center justify-center relative overflow-hidden">
             <!-- Cinematic Backgrounds -->
             <div id="bg-1" class="cinematic-bg opacity-100" style="background-image: url('https://i.postimg.cc/qqg0XNk7/EID_2024.jpg');"></div>
             <div id="bg-2" class="cinematic-bg opacity-0" style="background-image: url('https://i.postimg.cc/c1tQTXr3/EID_2.jpg');"></div>
             <div id="bg-3" class="cinematic-bg opacity-0" style="background-image: url('https://i.postimg.cc/9XwG1JrT/gathering_1.jpg');"></div>
             <div class="cinematic-overlay"></div>
 
-            <div class="relative z-10 w-full max-w-5xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+            <div class="relative z-10 w-full max-w-5xl mx-auto px-4 grid md:grid-cols-2 gap-8 md:gap-12 items-center mt-10 md:mt-0">
                 
                 <!-- Left Side: Islamic Content -->
                 <div class="text-white text-center md:text-left slide-up">
-                    <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="Logo" class="h-24 w-24 rounded-full border-4 border-white shadow-lg mx-auto md:mx-0 mb-6">
-                    <h1 class="text-4xl md:text-6xl font-bold mb-4">Rwanda Muslim Community</h1>
-                    <p class="text-xl md:text-2xl text-gray-200 mb-8 font-light">Peace, Unity, and Development.</p>
+                    <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="Logo" class="h-20 w-20 md:h-24 md:w-24 rounded-full border-4 border-white shadow-lg mx-auto md:mx-0 mb-4 md:mb-6">
+                    <h1 class="text-3xl sm:text-4xl md:text-6xl font-bold mb-2 md:mb-4">Rwanda Muslim Community</h1>
+                    <p class="text-lg md:text-2xl text-gray-200 mb-6 md:mb-8 font-light">Peace, Unity, and Development.</p>
                     
-                    <div class="bg-black bg-opacity-40 p-6 rounded-lg border-l-4 border-rmc-green">
-                        <p id="daily-quote" class="font-arabic text-2xl md:text-3xl leading-loose mb-2">إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ</p>
-                        <p id="daily-translation" class="text-lg italic text-gray-300">"Indeed, Allah is with the patient." (Quran 2:153)</p>
+                    <div class="bg-black bg-opacity-40 p-4 md:p-6 rounded-lg border-l-4 border-rmc-green min-h-[160px] flex flex-col justify-center">
+                        <p id="daily-quote" class="font-arabic text-xl sm:text-2xl md:text-3xl leading-loose mb-2 quote-text">إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ</p>
+                        <p id="daily-translation" class="text-base md:text-lg italic text-gray-300 quote-text">"Indeed, Allah is with the patient." (Quran 2:153)</p>
                     </div>
                 </div>
 
                 <!-- Right Side: Login Panel -->
-                <div class="glass-panel p-8 w-full max-w-md mx-auto slide-up" style="animation-delay: 0.2s;">
-                    <h2 class="text-2xl font-bold text-center text-rmc-dark-green mb-6">Welcome Back</h2>
-                    <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
-                        <div>
+                <div class="glass-panel p-6 md:p-8 w-full max-w-md mx-auto slide-up mt-8 md:mt-0" style="animation-delay: 0.2s;">
+                    <h2 class="text-xl md:text-2xl font-bold text-center text-rmc-dark-green mb-6">Welcome Back</h2>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fas fa-envelope"></i></span>
@@ -672,6 +676,15 @@
             }
             // Proceed to fetch data anyway!
             listenToAnnouncements();
+            
+            // Persistent Login Check
+            const savedUser = sessionStorage.getItem('rmc_user');
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                setLoginState(user, user.email === 'rwandamuslimcommunity@gmail.com');
+                // Force navigation to home to bypass the landing screen if already logged in
+                navigateTo('home');
+            }
         }
         initAuth();
 
@@ -844,7 +857,9 @@
             try {
                 // Admin Hardcoded Check
                 if (email === 'rwandamuslimcommunity@gmail.com' && pass === 'AllahAkbar-AllahAkbar-AllahAkbar') {
-                    setLoginState({ name: "RMC Admin", email: email }, true);
+                    const adminUser = { name: "RMC Admin", email: email };
+                    sessionStorage.setItem('rmc_user', JSON.stringify(adminUser));
+                    setLoginState(adminUser, true);
                     navigateTo('studio');
                     return;
                 }
@@ -855,6 +870,7 @@
 
                 if (!querySnapshot.empty) {
                     const userData = querySnapshot.docs[0].data();
+                    sessionStorage.setItem('rmc_user', JSON.stringify(userData));
                     setLoginState(userData, false);
                     navigateTo('home');
                 } else {
@@ -906,6 +922,7 @@
 
                 await addDoc(usersRef, userData);
                 
+                sessionStorage.setItem('rmc_user', JSON.stringify(userData));
                 showModal("Success!", "Registration complete! Welcome to the portal.");
                 setLoginState(userData, false);
                 navigateTo('home');
@@ -929,6 +946,14 @@
             greeting.classList.remove('hidden');
             document.getElementById('logout-btn').classList.remove('hidden');
 
+            const mobileGreeting = document.getElementById('mobile-user-greeting');
+            if (mobileGreeting) {
+                mobileGreeting.innerText = `Ahlan, ${user.name}`;
+                mobileGreeting.classList.remove('hidden');
+            }
+            const mobileLogout = document.getElementById('mobile-logout-btn');
+            if (mobileLogout) mobileLogout.classList.remove('hidden');
+
             if (isAdmin) {
                 document.getElementById('nav-studio-link').classList.remove('hidden');
                 document.getElementById('mobile-studio-link').classList.remove('hidden');
@@ -941,11 +966,18 @@
         window.logout = function() {
             window.RMC_STATE.currentUser = null;
             window.RMC_STATE.isAdmin = false;
+            sessionStorage.removeItem('rmc_user');
+            
             document.getElementById('login-form').reset();
             navigateTo('landing');
             document.getElementById('user-greeting').classList.add('hidden');
             document.getElementById('logout-btn').classList.add('hidden');
             document.getElementById('nav-studio-link').classList.add('hidden');
+            
+            const mobileGreeting = document.getElementById('mobile-user-greeting');
+            if (mobileGreeting) mobileGreeting.classList.add('hidden');
+            const mobileLogout = document.getElementById('mobile-logout-btn');
+            if (mobileLogout) mobileLogout.classList.add('hidden');
         };
 
         // Studio Interface Toggles
@@ -1150,6 +1182,37 @@
             landingBgIndex = (landingBgIndex % 3) + 1;
             document.getElementById(`bg-${landingBgIndex}`).style.opacity = '1';
         }, 5000);
+
+        // Dynamic Islamic Quotes Rotator
+        const islamicQuotes = [
+            { arabic: "إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ", translation: "\"Indeed, Allah is with the patient.\" (Quran 2:153)" },
+            { arabic: "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ", translation: "\"All praise is due to Allah, Lord of the worlds.\" (Quran 1:2)" },
+            { arabic: "خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ", translation: "\"The best among you are those who learn the Quran and teach it.\" (Hadith Bukhari)" },
+            { arabic: "إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ", translation: "\"Verily, actions are judged by intentions.\" (Hadith Bukhari & Muslim)" },
+            { arabic: "وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ", translation: "\"And He is with you wherever you are.\" (Quran 57:4)" }
+        ];
+        
+        let quoteIndex = 0;
+        setInterval(() => {
+            const quoteEl = document.getElementById('daily-quote');
+            const transEl = document.getElementById('daily-translation');
+            if(!quoteEl || !transEl) return;
+            
+            // Trigger Fade Out
+            quoteEl.classList.add('fade-out');
+            transEl.classList.add('fade-out');
+            
+            setTimeout(() => {
+                // Change Text Content
+                quoteIndex = (quoteIndex + 1) % islamicQuotes.length;
+                quoteEl.innerText = islamicQuotes[quoteIndex].arabic;
+                transEl.innerText = islamicQuotes[quoteIndex].translation;
+                
+                // Trigger Fade In
+                quoteEl.classList.remove('fade-out');
+                transEl.classList.remove('fade-out');
+            }, 1000); // Matches the CSS transition duration
+        }, 8000);
 
         // Home Page Carousel Logic
         let carouselInterval;
