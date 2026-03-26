@@ -118,12 +118,28 @@
             transition: transform 0.5s ease;
         }
         .carousel-slide.active .carousel-content { transform: translateY(0); }
+
+        /* Cinematic Background for Main App */
+        .cinematic-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 1.5s ease-in-out;
+            z-index: -2;
+        }
+        .cinematic-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(17, 24, 39, 0.7), rgba(6, 78, 59, 0.8));
+            z-index: -1;
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-rmc-black font-sans min-h-screen flex flex-col overflow-x-hidden">
+<body class="bg-gray-50 text-rmc-black font-sans min-h-screen overflow-x-hidden">
 
     <!-- Global Message Modal -->
-    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center fade-in">
+    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden flex items-center justify-center fade-in">
         <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4 shadow-2xl transform transition-all text-center">
             <div id="modal-icon" class="text-4xl mb-4 text-rmc-green"><i class="fas fa-info-circle"></i></div>
             <h3 id="modal-title" class="text-lg font-bold mb-2">Message</h3>
@@ -132,508 +148,536 @@
         </div>
     </div>
 
-    <!-- Navigation -->
-    <nav id="main-nav" class="bg-white shadow-md sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20">
-                <div class="flex items-center cursor-pointer" onclick="navigateTo('home')">
-                    <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="RMC Logo" class="h-12 w-auto mr-3 rounded-full border border-gray-200">
-                    <div>
-                        <span class="font-bold text-xl text-rmc-dark-green block leading-tight">RMC</span>
-                        <span class="text-xs text-gray-500">Rwanda Muslim Community</span>
-                    </div>
-                </div>
-                <div class="hidden md:flex items-center space-x-6">
-                    <a href="#" onclick="navigateTo('home')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-home mr-1"></i> Home</a>
-                    <a href="#" onclick="navigateTo('programs')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-hand-holding-heart mr-1"></i> Programs</a>
-                    <a href="#" onclick="navigateTo('announcements')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-bullhorn mr-1"></i> Announcements</a>
-                    <a href="#" onclick="navigateTo('events')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-calendar-alt mr-1"></i> Events</a>
-                    <a href="#" onclick="navigateTo('about')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-info-circle mr-1"></i> About Us</a>
-                    <a href="#" onclick="navigateTo('studio')" id="nav-studio-link" class="nav-link text-rmc-blue hover:text-blue-900 font-bold hidden transition"><i class="fas fa-cog mr-1"></i> Studio</a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span id="user-greeting" class="text-sm font-medium text-gray-600 hidden md:block"></span>
-                    <button onclick="navigateTo('login')" id="login-nav-btn" class="text-rmc-green hover:text-rmc-dark-green font-medium text-sm border border-rmc-green px-4 py-1.5 rounded-full hover:bg-green-50 transition"><i class="fas fa-sign-in-alt mr-1"></i> Login</button>
-                    <button onclick="logout()" id="logout-btn" class="text-red-500 hover:text-red-700 font-medium text-sm border border-red-200 px-3 py-1 rounded-full hover:bg-red-50 transition hidden"><i class="fas fa-sign-out-alt mr-1"></i> Logout</button>
-                    <!-- Mobile menu button -->
-                    <button class="md:hidden text-gray-500 hover:text-rmc-green focus:outline-none" onclick="toggleMobileMenu()">
-                        <i class="fas fa-bars text-2xl"></i>
-                    </button>
-                </div>
-            </div>
+    <!-- ================= STANDALONE AUTH PORTAL ================= -->
+    <!-- This container is structurally isolated from the main website -->
+    <div id="auth-container" class="hidden min-h-screen w-full relative flex items-center justify-center py-12 px-4 overflow-y-auto">
+        <!-- Beautiful Static Auth Background -->
+        <div class="fixed inset-0 z-0">
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://i.postimg.cc/qqg0XNk7/EID_2024.jpg');"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-rmc-dark-green/95 to-rmc-black/95 backdrop-blur-sm"></div>
         </div>
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-2 pt-2 pb-4 space-y-1 shadow-inner">
-             <span id="mobile-user-greeting" class="block px-3 py-2 text-sm font-bold text-rmc-dark-green hidden border-b border-gray-100 mb-2"></span>
-             <a href="#" onclick="navigateTo('home'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-home mr-2 w-5"></i> Home</a>
-             <a href="#" onclick="navigateTo('programs'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-hand-holding-heart mr-2 w-5"></i> Programs</a>
-             <a href="#" onclick="navigateTo('announcements'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-bullhorn mr-2 w-5"></i> Announcements</a>
-             <a href="#" onclick="navigateTo('events'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-calendar-alt mr-2 w-5"></i> Events</a>
-             <a href="#" onclick="navigateTo('about'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-info-circle mr-2 w-5"></i> About Us</a>
-             <a href="#" onclick="navigateTo('studio'); toggleMobileMenu()" id="mobile-studio-link" class="hidden block px-3 py-2 text-base font-medium text-rmc-blue hover:bg-blue-50 rounded-md"><i class="fas fa-cog mr-2 w-5"></i> Studio</a>
-             <button onclick="navigateTo('login'); toggleMobileMenu()" id="mobile-login-btn" class="w-full text-left block px-3 py-2 text-base font-medium text-rmc-green hover:bg-green-50 rounded-md mt-2"><i class="fas fa-sign-in-alt mr-2 w-5"></i> Login</button>
-             <button onclick="logout(); toggleMobileMenu()" id="mobile-logout-btn" class="hidden w-full text-left block px-3 py-2 text-base font-medium text-red-500 hover:bg-red-50 rounded-md mt-2"><i class="fas fa-sign-out-alt mr-2 w-5"></i> Logout</button>
-        </div>
-    </nav>
 
-    <main class="flex-grow relative">
+        <button type="button" onclick="navigateTo('home')" class="fixed z-50 left-4 top-4 md:left-8 md:top-8 text-white hover:text-rmc-green font-bold text-base md:text-lg drop-shadow-md transition flex items-center bg-black/30 px-4 py-2 rounded-full backdrop-blur-md border border-white/10 hover:bg-black/50">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Main Site
+        </button>
 
-        <!-- ================= LOGIN PAGE ================= -->
-        <section id="login" class="page-section bg-gray-100 py-12 min-h-screen flex items-center justify-center">
-            <div class="max-w-md w-full mx-auto px-4">
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden slide-up">
-                    <div class="bg-rmc-dark-green text-white p-6 text-center relative">
-                        <button type="button" onclick="navigateTo('home')" class="absolute left-6 top-6 text-white hover:text-gray-300"><i class="fas fa-arrow-left mr-1"></i> Back</button>
-                        <h2 class="text-2xl font-bold">Welcome Back</h2>
-                        <p class="text-rmc-green-100 mt-1 text-sm">Sign in to the portal</p>
-                    </div>
-                    
-                    <div class="p-8">
-                        <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                                <div class="relative">
-                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fas fa-envelope"></i></span>
-                                    <input type="email" id="login-email" required class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rmc-green focus:border-transparent">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                                <div class="relative">
-                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fas fa-lock"></i></span>
-                                    <input type="password" id="login-password" required class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rmc-green focus:border-transparent">
-                                    <button type="button" onclick="togglePassword('login-password', 'login-eye-icon')" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-rmc-green focus:outline-none">
-                                        <i class="fas fa-eye" id="login-eye-icon"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <button type="submit" id="login-btn" class="w-full bg-rmc-green text-white font-bold py-3 rounded-md hover:bg-rmc-dark-green transition shadow-md flex justify-center items-center">
-                                <span>Sign In</span>
-                            </button>
-                        </form>
-                        <div class="mt-6 text-center text-sm text-gray-600">
-                            Don't have an account? 
-                            <a href="#" onclick="navigateTo('signup')" class="text-rmc-blue font-bold hover:underline">Register Here</a>
-                        </div>
-                    </div>
+        <!-- STANDALONE LOGIN PAGE -->
+        <div id="login" class="page-section w-full max-w-md relative z-10 my-auto">
+            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden slide-up border border-white/20">
+                <div class="bg-gradient-to-r from-rmc-dark-green to-rmc-green text-white p-8 text-center relative">
+                    <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="Logo" class="h-20 w-20 rounded-full border-4 border-white shadow-lg mx-auto mb-4">
+                    <h2 class="text-2xl font-bold">Welcome Back</h2>
+                    <p class="text-rmc-green-100 mt-1 text-sm">Sign in to the RMC portal</p>
                 </div>
-            </div>
-        </section>
-
-        <!-- ================= SIGNUP PAGE ================= -->
-        <section id="signup" class="page-section bg-gray-100 py-12">
-            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden slide-up">
-                    <div class="bg-rmc-dark-green text-white p-6 text-center relative">
-                        <button type="button" onclick="navigateTo('login')" class="absolute left-6 top-6 text-white hover:text-gray-300"><i class="fas fa-arrow-left"></i> Back</button>
-                        <h2 class="text-3xl font-bold">Community Registration</h2>
-                        <p class="mt-2 text-rmc-green-100">Join the Rwanda Muslim Community network.</p>
-                    </div>
-                    
-                    <form id="signup-form" onsubmit="handleSignup(event)" class="p-8 space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Personal Info -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">First Name</label>
-                                <input type="text" id="reg-firstname" required class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Last Name</label>
-                                <input type="text" id="reg-lastname" required class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Father's Name</label>
-                                <input type="text" id="reg-fathername" required class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Gender</label>
-                                <select id="reg-gender" required class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
-                                    <option value="">Select Gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                </select>
-                            </div>
-                            <div class="md:col-span-2 bg-gray-50 p-3 rounded text-sm text-gray-600 text-center border border-gray-200">
-                                Your generated profile name will be: <br>
-                                <strong id="preview-name" class="text-rmc-green text-lg">---</strong>
-                            </div>
-
-                            <!-- Account Info -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Email Address</label>
-                                <input type="email" id="reg-email" required class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Password</label>
-                                <div class="relative">
-                                    <input type="password" id="reg-password" required minlength="6" class="mt-1 w-full p-2 pr-10 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
-                                    <button type="button" onclick="togglePassword('reg-password', 'reg-eye-icon')" class="absolute inset-y-0 right-0 mt-1 flex items-center pr-3 text-gray-400 hover:text-rmc-green focus:outline-none">
-                                        <i class="fas fa-eye" id="reg-eye-icon"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Location Info -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Country</label>
-                                <input type="text" id="reg-country" value="Rwanda" readonly class="mt-1 w-full p-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Province</label>
-                                <select id="reg-province" required onchange="updateDistricts()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green">
-                                    <option value="">Select Province</option>
-                                    <option value="Kigali City">Kigali City</option>
-                                    <option value="Northern">Northern Province</option>
-                                    <option value="Southern">Southern Province</option>
-                                    <option value="Eastern">Eastern Province</option>
-                                    <option value="Western">Western Province</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">District</label>
-                                <select id="reg-district" required disabled onchange="updateSectors()" class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green bg-gray-50">
-                                    <option value="">Select Province First</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Sector</label>
-                                <select id="reg-sector" required disabled class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:ring-rmc-green focus:border-rmc-green bg-gray-50">
-                                    <option value="">Select District First</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="pt-4">
-                            <button type="submit" id="reg-btn" class="w-full bg-rmc-blue text-white font-bold py-3 rounded-md hover:bg-blue-900 transition shadow-md flex justify-center items-center">
-                                <span>Create Account</span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= HOME PAGE ================= -->
-        <section id="home" class="page-section active">
-            <!-- Hero -->
-            <div class="relative bg-rmc-dark-green text-white py-20 px-4">
-                <div class="absolute inset-0 z-0 opacity-20 bg-cover bg-center" style="background-image: url('https://i.postimg.cc/7hbDM5xH/EID_2025.jpg');"></div>
-                <div class="max-w-7xl mx-auto relative z-10 text-center slide-up">
-                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Assalamu Alaikum</h1>
-                    <p class="text-xl max-w-2xl mx-auto text-gray-200">Welcome to the official portal of the Rwanda Muslim Community. Discover our programs, stay updated with announcements, and connect with the leadership.</p>
-                </div>
-            </div>
-
-            <!-- Brief About Section -->
-            <div class="bg-white py-12 border-b border-gray-100">
-                <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center slide-up">
-                    <h2 class="text-2xl font-bold text-rmc-dark-green mb-4"><i class="fas fa-mosque mr-2"></i> Who We Are</h2>
-                    <p class="text-gray-600 leading-relaxed max-w-3xl mx-auto">
-                        The <strong>Rwanda Muslim Community (RMC)</strong> is the apex body representing the Islamic faith and interests in Rwanda. 
-                        Headquartered in Kigali and operating under the leadership of the Mufti of Rwanda, we are dedicated to spiritual guidance, educational advancement, and the socio-economic development of all Rwandans.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Animated Events Carousel -->
-            <div class="bg-gray-50 py-12">
-                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 slide-up" style="animation-delay: 0.1s;">
-                    <div class="text-center mb-8">
-                        <h2 class="text-3xl font-bold text-rmc-black mb-2">Featured Events & Gatherings</h2>
-                        <div class="w-24 h-1 bg-rmc-blue mx-auto rounded"></div>
-                    </div>
-                    
-                    <div class="carousel-container shadow-2xl" id="home-carousel">
-                        <!-- Default Slides (Overwritten dynamically if admin adds events) -->
-                        <div class="carousel-slide active" style="background-image: url('https://i.postimg.cc/9XwG1JrT/gathering_1.jpg');">
-                            <div class="carousel-content">
-                                <span class="bg-rmc-blue text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mb-2 inline-block">Gathering</span>
-                                <h3 class="text-2xl font-bold mb-2">Meeting the President</h3>
-                                <p class="text-gray-200">A historic gathering demonstrating the strong unity and collaboration between the Rwanda Muslim Community and national leadership.</p>
-                            </div>
-                        </div>
-                        <div class="carousel-slide" style="background-image: url('https://i.postimg.cc/qqg0XNk7/EID_2024.jpg');">
-                            <div class="carousel-content">
-                                <span class="bg-rmc-green text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mb-2 inline-block">Celebration</span>
-                                <h3 class="text-2xl font-bold mb-2">Eid Al-Fitr Celebration</h3>
-                                <p class="text-gray-200">Thousands of Muslims gather at the regional stadium to perform Eid prayers, reflecting the growth and unity of the community.</p>
-                            </div>
-                        </div>
-                        <div class="carousel-slide" style="background-image: url('https://i.postimg.cc/Y2L18bht/MUSABAQAT_1.jpg');">
-                            <div class="carousel-content">
-                                <span class="bg-rmc-dark-green text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mb-2 inline-block">Competition</span>
-                                <h3 class="text-2xl font-bold mb-2">International Qur'an Recitation</h3>
-                                <p class="text-gray-200">Hosting talented reciters from across the globe in Kigali, promoting spiritual literacy and peaceful understanding.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Leadership Board -->
-            <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-12 slide-up">
-                    <h2 class="text-3xl font-bold text-rmc-black mb-2">RMC Leadership Board</h2>
-                    <div class="w-24 h-1 bg-rmc-green mx-auto rounded"></div>
-                </div>
-
-                <!-- Top Leaders -->
-                <div class="flex flex-col items-center space-y-12 mb-16 slide-up" style="animation-delay: 0.2s;">
-                    <!-- Mufti -->
-                    <div class="text-center group">
-                        <img src="https://i.postimg.cc/yxnB0F4N/mufti.jpg" alt="Mufti" class="board-circle mx-auto border-rmc-green">
-                        <h3 class="mt-4 text-xl font-bold text-gray-900">Sheikh SINDAYIGAYA Mussa</h3>
-                        <p class="text-rmc-green font-semibold uppercase tracking-wide text-sm mt-1">Mufti of Rwanda</p>
-                    </div>
-                    <!-- Deputy -->
-                    <div class="text-center group">
-                        <img src="https://i.postimg.cc/cLS2dvVf/yunus.jpg" alt="Deputy Mufti" class="board-circle mx-auto border-rmc-blue" style="width: 130px; height: 130px;">
-                        <h3 class="mt-4 text-lg font-bold text-gray-900">Sheikh MUSHUMBA Yunus</h3>
-                        <p class="text-rmc-blue font-semibold uppercase tracking-wide text-sm mt-1">Deputy Mufti of Rwanda</p>
-                    </div>
-                </div>
-
-                <!-- Commissions -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-10 slide-up" style="animation-delay: 0.4s;">
-                    <div class="text-center bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
-                        <img src="https://i.postimg.cc/vZskG4pf/ALLY.jpg" alt="Ameer" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 border-2 border-gray-200">
-                        <h3 class="font-bold text-gray-900">Sheikh BAKERA Ally</h3>
-                        <p class="text-gray-500 text-sm mt-1">Ameer of Foreigner Affairs</p>
-                    </div>
-                    <div class="text-center bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
-                        <img src="https://i.postimg.cc/sgrq3MtS/ISSA.jpg" alt="Ameer" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 border-2 border-gray-200">
-                        <h3 class="font-bold text-gray-900">BICAHAGA Hamidu</h3>
-                        <p class="text-gray-500 text-sm mt-1">Ameer of Development Planning</p>
-                    </div>
-                    <div class="text-center bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
-                        <img src="https://i.postimg.cc/3xTV3kP0/ABDALLAH.jpg" alt="Ameer" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 border-2 border-gray-200">
-                        <h3 class="font-bold text-gray-900">Bwana MURENZI Abdallah</h3>
-                        <p class="text-gray-500 text-sm mt-1">Ameer of Audit Commission</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= ABOUT US PAGE ================= -->
-        <section id="about" class="page-section bg-white py-16">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-rmc-black mb-2">About RMC</h2>
-                    <div class="w-24 h-1 bg-rmc-green mx-auto rounded"></div>
-                </div>
-
-                <div class="prose prose-lg text-gray-700 mx-auto space-y-8">
-                    <p>The <strong>Rwanda Muslim Community (RMC)</strong>, formerly known as the Association des Musulmans au Rwanda (AMUR), is the apex body representing the Islamic faith and interests in Rwanda. Historically a marginalized group, the community has seen a significant shift in its social and political standing in the decades following the 1994 Genocide against the Tutsi.</p>
-                    <p>The RMC is the primary organization representing the Islamic faith in Rwanda. Headquartered in Kigali, it operates under the leadership of the Mufti of Rwanda.</p>
-
-                    <h3 class="text-2xl font-bold text-rmc-dark-green border-b pb-2 mt-8">Historical Context and Evolution</h3>
-                    <p>The RMC has been central to the religious and social life of Muslims in Rwanda, providing a structured framework for worship and community development. A significant part of its modern history involves the effort to make sacred texts accessible to the Rwandan people in their native language, Kinyarwanda. This journey reached a major milestone with the publication of the first translation of the Quran in 2011, refined in 2020 for higher accuracy.</p>
-                    
-                    <h3 class="text-2xl font-bold text-rmc-dark-green border-b pb-2 mt-8">Mission and Vision</h3>
-                    <ul class="list-disc pl-5 space-y-2">
-                        <li><strong>Spiritual Guidance:</strong> Providing a "path and guidance" for the inhabitants of the world through the teachings of the Quran.</li>
-                        <li><strong>Educational Advancement:</strong> Collaborating with international partners like the Africa Development and Education Foundation (ADEF) to improve religious literacy.</li>
-                        <li><strong>Community Support:</strong> Offering religious resources, such as the translated Quran, free of charge to the public.</li>
-                    </ul>
-
-                    <h3 class="text-2xl font-bold text-rmc-dark-green border-b pb-2 mt-8">The Translation of the Holy Quran</h3>
-                    <p>In partnership with ADEF, the RMC successfully completed two major versions:</p>
-                    <ol class="list-decimal pl-5 space-y-2">
-                        <li><strong>The Older Version (2011):</strong> The first major attempt to bring meanings to Kinyarwanda speakers. Groundbreaking but required refinement.</li>
-                        <li><strong>The New Version (November 2020):</strong> A specialized committee worked from Feb 2014 to Nov 2020. Improved contextual accuracy, enhanced clarity with footnotes, and linguistic precision. Validated by over sixty scholars.</li>
-                    </ol>
-
-                    <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-rmc-blue my-8">
-                        <h4 class="font-bold text-lg mb-2">Acknowledgements</h4>
-                        <p class="text-sm">Led by Sheikh Hitimana Salim (former Mufti) and the Translation Committee led by Sheikh Mushumba Yunusu, with support from ADEF and the Islamic Cultural Center in Nyamirambo.</p>
-                    </div>
-
-                    <h3 class="text-2xl font-bold text-rmc-dark-green border-b pb-2 mt-8">Post-Genocide Growth & Future Vision</h3>
-                    <p>Since 1994, the Muslim population grew significantly as many Rwandans converted, citing the community's ethical stance during the genocide and commitment to peace. The current Strategic Plan (2024–2029) focuses on Unity, Dawah, Socio-economic development, infrastructure renovation, and governance reforms.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= PROGRAMS PAGE ================= -->
-        <section id="programs" class="page-section bg-gray-50 py-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-rmc-black mb-2">Our Key Programs</h2>
-                    <div class="w-24 h-1 bg-rmc-green mx-auto rounded"></div>
-                    <p class="mt-4 text-gray-600">Driving socio-economic development and spiritual growth.</p>
-                </div>
-
-                <div class="grid md:grid-cols-3 gap-8">
-                    <!-- Edu -->
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
-                        <div class="h-48 bg-rmc-blue flex items-center justify-center text-white text-5xl">
-                            <i class="fas fa-graduation-cap"></i>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold mb-3 text-rmc-dark-green">Education and Schools</h3>
-                            <p class="text-gray-600 text-sm">The RMC operates numerous private Islamic schools across Rwanda, such as Lycee Islamique de Rwamagana. These integrate the national curriculum (REB) with Islamic religious studies, managed via the digital "RMC Education" system.</p>
-                        </div>
-                    </div>
-                    <!-- Peace -->
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
-                        <div class="h-48 bg-rmc-green flex items-center justify-center text-white text-5xl">
-                            <i class="fas fa-dove"></i>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold mb-3 text-rmc-dark-green">Peace and Reconciliation</h3>
-                            <p class="text-gray-600 text-sm">A key partner in Rwanda’s "Ndi Umunyarwanda" initiative. Muslim leaders actively serve on national interfaith commissions, and host events like the International Qur'an Recitation Competition to promote cohesion.</p>
-                        </div>
-                    </div>
-                    <!-- Social -->
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
-                        <div class="h-48 bg-black flex items-center justify-center text-white text-5xl">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold mb-3 text-rmc-dark-green">Social & Cultural Life</h3>
-                            <p class="text-gray-600 text-sm">Organizing major Eid celebrations recognized nationally. Empowering Muslim youth to participate actively in monthly Umuganda (community work) focused on environmental protection and development.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= ANNOUNCEMENTS PAGE ================= -->
-        <section id="announcements" class="page-section bg-white py-16 min-h-screen">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
-                <div class="flex justify-between items-end mb-12 border-b pb-4">
-                    <div>
-                        <h2 class="text-3xl font-bold text-rmc-black mb-2">Community Announcements</h2>
-                        <div class="w-24 h-1 bg-rmc-green rounded"></div>
-                        <p class="text-gray-500 mt-2">Stay updated with official news from the community.</p>
-                    </div>
-                    <div id="loading-announcements" class="hidden text-sm text-gray-500"><i class="fas fa-spinner fa-spin mr-1"></i> Syncing...</div>
-                </div>
-
-                <div id="announcements-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Dynamic Content Injected Here -->
-                    <div class="col-span-full text-center py-12 text-gray-400">Loading content...</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= EVENTS PAGE ================= -->
-        <section id="events" class="page-section bg-white py-16 min-h-screen">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
-                <div class="flex justify-between items-end mb-8 border-b pb-4">
-                    <div>
-                        <h2 class="text-3xl font-bold text-rmc-black mb-2">Events & Gatherings</h2>
-                        <div class="w-24 h-1 bg-rmc-blue rounded"></div>
-                        <p class="text-gray-500 mt-2">Discover upcoming gatherings and look back at past events.</p>
-                    </div>
-                </div>
-
-                <!-- Upcoming Events Container -->
-                <h3 class="text-2xl font-bold text-rmc-dark-green mb-6 flex items-center"><i class="fas fa-calendar-check mr-3"></i> Upcoming Events</h3>
-                <div id="upcoming-events-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                    <!-- Dynamic Content -->
-                </div>
-
-                <!-- Past Events Container -->
-                <h3 class="text-2xl font-bold text-gray-600 mb-6 flex items-center"><i class="fas fa-history mr-3"></i> Past Events</h3>
-                <div id="past-events-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 opacity-80">
-                    <!-- Dynamic Content -->
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= STUDIO (ADMIN) PAGE ================= -->
-        <section id="studio" class="page-section bg-gray-100 py-12 min-h-screen">
-            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
-                <div class="bg-white rounded-xl shadow-lg p-6 md:p-10 border-t-8 border-rmc-blue">
-                    <div class="flex justify-between items-center mb-8">
+                
+                <div class="p-8">
+                    <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
                         <div>
-                            <h2 class="text-3xl font-bold text-rmc-black">RMC Studio Dashboard</h2>
-                            <p class="text-gray-500">Manage announcements and content.</p>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fas fa-envelope"></i></span>
+                                <input type="email" id="login-email" required class="w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rmc-green focus:bg-white transition">
+                            </div>
                         </div>
-                        <span class="bg-blue-100 text-rmc-blue px-3 py-1 rounded-full text-sm font-bold border border-blue-200">Admin Mode</span>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fas fa-lock"></i></span>
+                                <input type="password" id="login-password" required class="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rmc-green focus:bg-white transition">
+                                <button type="button" onclick="togglePassword('login-password', 'login-eye-icon')" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-rmc-green focus:outline-none">
+                                    <i class="fas fa-eye" id="login-eye-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" id="login-btn" class="w-full bg-rmc-green text-white font-bold py-3.5 rounded-lg hover:bg-rmc-dark-green transition shadow-lg shadow-rmc-green/30 flex justify-center items-center mt-6">
+                            <span>Sign In</span>
+                        </button>
+                    </form>
+                    <div class="mt-8 text-center text-sm text-gray-600 border-t border-gray-100 pt-6">
+                        Don't have an account? 
+                        <a href="#" onclick="navigateTo('signup')" class="text-rmc-green font-bold hover:text-rmc-dark-green transition hover:underline">Register Here</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STANDALONE SIGNUP PAGE -->
+        <div id="signup" class="page-section w-full max-w-4xl relative z-10 my-auto">
+            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden slide-up border border-white/20">
+                <div class="bg-gradient-to-r from-rmc-dark-green to-rmc-green text-white p-8 text-center relative flex flex-col items-center">
+                    <div class="absolute left-6 top-6 cursor-pointer" onclick="navigateTo('login')">
+                        <span class="text-white hover:text-gray-200 flex items-center font-medium bg-black/20 px-3 py-1.5 rounded-full"><i class="fas fa-arrow-left mr-2"></i> Back to Login</span>
+                    </div>
+                    <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="Logo" class="h-16 w-16 rounded-full border-2 border-white shadow-md mb-3">
+                    <h2 class="text-3xl font-bold">Community Registration</h2>
+                    <p class="text-rmc-green-100 mt-2">Create your official RMC profile.</p>
+                </div>
+                
+                <form id="signup-form" onsubmit="handleSignup(event)" class="p-8 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Personal Info -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700">First Name</label>
+                            <input type="text" id="reg-firstname" required class="mt-1.5 w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rmc-green focus:bg-white transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700">Last Name</label>
+                            <input type="text" id="reg-lastname" required class="mt-1.5 w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rmc-green focus:bg-white transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700">Father's Name</label>
+                            <input type="text" id="reg-fathername" required class="mt-1.5 w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rmc-green focus:bg-white transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700">Gender</label>
+                            <select id="reg-gender" required class="mt-1.5 w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rmc-green focus:bg-white transition">
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2 bg-green-50 p-4 rounded-xl text-sm text-gray-700 text-center border border-green-100 shadow-inner">
+                            Your generated profile name will be: <br>
+                            <strong id="preview-name" class="text-rmc-dark-green text-xl font-bold mt-1 inline-block">---</strong>
+                        </div>
+
+                        <!-- Account Info -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700">Email Address</label>
+                            <input type="email" id="reg-email" required class="mt-1.5 w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rmc-green focus:bg-white transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700">Password</label>
+                            <div class="relative">
+                                <input type="password" id="reg-password" required minlength="6" class="mt-1.5 w-full p-3 pr-10 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rmc-green focus:bg-white transition">
+                                <button type="button" onclick="togglePassword('reg-password', 'reg-eye-icon')" class="absolute inset-y-0 right-0 mt-1.5 flex items-center pr-4 text-gray-400 hover:text-rmc-green focus:outline-none">
+                                    <i class="fas fa-eye" id="reg-eye-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Location Info -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700">Country</label>
+                            <input type="text" id="reg-country" value="Rwanda" readonly class="mt-1.5 w-full p-3 border border-gray-200 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700">Province</label>
+                            <select id="reg-province" required onchange="updateDistricts()" class="mt-1.5 w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rmc-green focus:bg-white transition">
+                                <option value="">Select Province</option>
+                                <option value="Kigali City">Kigali City</option>
+                                <option value="Northern">Northern Province</option>
+                                <option value="Southern">Southern Province</option>
+                                <option value="Eastern">Eastern Province</option>
+                                <option value="Western">Western Province</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700">District</label>
+                            <select id="reg-district" required disabled onchange="updateSectors()" class="mt-1.5 w-full p-3 bg-gray-100 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rmc-green focus:bg-white transition disabled:opacity-50">
+                                <option value="">Select Province First</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700">Sector</label>
+                            <select id="reg-sector" required disabled class="mt-1.5 w-full p-3 bg-gray-100 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rmc-green focus:bg-white transition disabled:opacity-50">
+                                <option value="">Select District First</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-gray-100 mt-8">
+                        <button type="submit" id="reg-btn" class="w-full bg-rmc-blue text-white font-bold py-4 rounded-lg hover:bg-blue-900 transition shadow-lg shadow-rmc-blue/30 flex justify-center items-center text-lg">
+                            <span>Create Official Account</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MAIN WEBSITE APP CONTAINER ================= -->
+    <!-- This container holds everything related to the main website -->
+    <div id="main-app-container" class="flex flex-col min-h-screen w-full">
+        
+        <!-- Navigation -->
+        <nav id="main-nav" class="bg-white shadow-md sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-20">
+                    <div class="flex items-center cursor-pointer" onclick="navigateTo('home')">
+                        <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="RMC Logo" class="h-12 w-auto mr-3 rounded-full border border-gray-200">
+                        <div>
+                            <span class="font-bold text-xl text-rmc-dark-green block leading-tight">RMC</span>
+                            <span class="text-xs text-gray-500">Rwanda Muslim Community</span>
+                        </div>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="#" onclick="navigateTo('home')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-home mr-1"></i> Home</a>
+                        <a href="#" onclick="navigateTo('programs')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-hand-holding-heart mr-1"></i> Programs</a>
+                        <a href="#" onclick="navigateTo('announcements')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-bullhorn mr-1"></i> Announcements</a>
+                        <a href="#" onclick="navigateTo('events')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-calendar-alt mr-1"></i> Events</a>
+                        <a href="#" onclick="navigateTo('about')" class="nav-link text-gray-700 hover:text-rmc-green font-medium transition"><i class="fas fa-info-circle mr-1"></i> About Us</a>
+                        <a href="#" onclick="navigateTo('studio')" id="nav-studio-link" class="nav-link text-rmc-blue hover:text-blue-900 font-bold hidden transition"><i class="fas fa-cog mr-1"></i> Studio</a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span id="user-greeting" class="text-sm font-medium text-gray-600 hidden md:block"></span>
+                        <button onclick="navigateTo('login')" id="login-nav-btn" class="text-rmc-green hover:text-rmc-dark-green font-medium text-sm border border-rmc-green px-4 py-1.5 rounded-full hover:bg-green-50 transition"><i class="fas fa-sign-in-alt mr-1"></i> Login</button>
+                        <button onclick="logout()" id="logout-btn" class="text-red-500 hover:text-red-700 font-medium text-sm border border-red-200 px-3 py-1 rounded-full hover:bg-red-50 transition hidden"><i class="fas fa-sign-out-alt mr-1"></i> Logout</button>
+                        <!-- Mobile menu button -->
+                        <button class="md:hidden text-gray-500 hover:text-rmc-green focus:outline-none" onclick="toggleMobileMenu()">
+                            <i class="fas fa-bars text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-2 pt-2 pb-4 space-y-1 shadow-inner">
+                 <span id="mobile-user-greeting" class="block px-3 py-2 text-sm font-bold text-rmc-dark-green hidden border-b border-gray-100 mb-2"></span>
+                 <a href="#" onclick="navigateTo('home'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-home mr-2 w-5"></i> Home</a>
+                 <a href="#" onclick="navigateTo('programs'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-hand-holding-heart mr-2 w-5"></i> Programs</a>
+                 <a href="#" onclick="navigateTo('announcements'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-bullhorn mr-2 w-5"></i> Announcements</a>
+                 <a href="#" onclick="navigateTo('events'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-calendar-alt mr-2 w-5"></i> Events</a>
+                 <a href="#" onclick="navigateTo('about'); toggleMobileMenu()" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-rmc-green hover:bg-gray-50 rounded-md"><i class="fas fa-info-circle mr-2 w-5"></i> About Us</a>
+                 <a href="#" onclick="navigateTo('studio'); toggleMobileMenu()" id="mobile-studio-link" class="hidden block px-3 py-2 text-base font-medium text-rmc-blue hover:bg-blue-50 rounded-md"><i class="fas fa-cog mr-2 w-5"></i> Studio</a>
+                 <button onclick="navigateTo('login'); toggleMobileMenu()" id="mobile-login-btn" class="w-full text-left block px-3 py-2 text-base font-medium text-rmc-green hover:bg-green-50 rounded-md mt-2"><i class="fas fa-sign-in-alt mr-2 w-5"></i> Login</button>
+                 <button onclick="logout(); toggleMobileMenu()" id="mobile-logout-btn" class="hidden w-full text-left block px-3 py-2 text-base font-medium text-red-500 hover:bg-red-50 rounded-md mt-2"><i class="fas fa-sign-out-alt mr-2 w-5"></i> Logout</button>
+            </div>
+        </nav>
+
+        <main class="flex-grow relative">
+
+            <!-- ================= HOME PAGE ================= -->
+            <section id="home" class="page-section active">
+                <!-- Hero -->
+                <div class="relative bg-rmc-dark-green text-white py-24 px-4 overflow-hidden">
+                    <div id="bg-1" class="cinematic-bg opacity-100" style="background-image: url('https://i.postimg.cc/qqg0XNk7/EID_2024.jpg');"></div>
+                    <div id="bg-2" class="cinematic-bg opacity-0" style="background-image: url('https://i.postimg.cc/c1tQTXr3/EID_2.jpg');"></div>
+                    <div id="bg-3" class="cinematic-bg opacity-0" style="background-image: url('https://i.postimg.cc/9XwG1JrT/gathering_1.jpg');"></div>
+                    <div class="cinematic-overlay"></div>
+                    
+                    <div class="max-w-7xl mx-auto relative z-10 text-center slide-up py-10">
+                        <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="Logo" class="h-20 w-20 md:h-24 md:w-24 rounded-full border-4 border-white shadow-lg mx-auto mb-6">
+                        <h1 class="text-4xl md:text-6xl font-bold mb-4">Rwanda Muslim Community</h1>
+                        <p class="text-xl md:text-2xl max-w-3xl mx-auto text-gray-200 font-light mb-8">Peace, Unity, and Development.</p>
+                        
+                        <div class="bg-black/40 backdrop-blur-sm p-4 md:p-6 rounded-xl border-l-4 border-rmc-green max-w-2xl mx-auto inline-block text-center min-h-[140px] flex-col justify-center shadow-xl">
+                            <p id="daily-quote" class="font-arabic text-2xl md:text-3xl leading-loose mb-2 text-white quote-text">إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ</p>
+                            <p id="daily-translation" class="text-base md:text-lg italic text-gray-300 quote-text">"Indeed, Allah is with the patient." (Quran 2:153)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Brief About Section -->
+                <div class="bg-white py-12 border-b border-gray-100">
+                    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center slide-up">
+                        <h2 class="text-2xl font-bold text-rmc-dark-green mb-4"><i class="fas fa-mosque mr-2"></i> Who We Are</h2>
+                        <p class="text-gray-600 leading-relaxed max-w-3xl mx-auto">
+                            The <strong>Rwanda Muslim Community (RMC)</strong> is the apex body representing the Islamic faith and interests in Rwanda. 
+                            Headquartered in Kigali and operating under the leadership of the Mufti of Rwanda, we are dedicated to spiritual guidance, educational advancement, and the socio-economic development of all Rwandans.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Animated Events Carousel -->
+                <div class="bg-gray-50 py-12">
+                    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 slide-up" style="animation-delay: 0.1s;">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-rmc-black mb-2">Featured Events & Gatherings</h2>
+                            <div class="w-24 h-1 bg-rmc-blue mx-auto rounded"></div>
+                        </div>
+                        
+                        <div class="carousel-container shadow-2xl" id="home-carousel">
+                            <!-- Default Slides (Overwritten dynamically if admin adds events) -->
+                            <div class="carousel-slide active" style="background-image: url('https://i.postimg.cc/9XwG1JrT/gathering_1.jpg');">
+                                <div class="carousel-content">
+                                    <span class="bg-rmc-blue text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mb-2 inline-block">Gathering</span>
+                                    <h3 class="text-2xl font-bold mb-2">Meeting the President</h3>
+                                    <p class="text-gray-200">A historic gathering demonstrating the strong unity and collaboration between the Rwanda Muslim Community and national leadership.</p>
+                                </div>
+                            </div>
+                            <div class="carousel-slide" style="background-image: url('https://i.postimg.cc/qqg0XNk7/EID_2024.jpg');">
+                                <div class="carousel-content">
+                                    <span class="bg-rmc-green text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mb-2 inline-block">Celebration</span>
+                                    <h3 class="text-2xl font-bold mb-2">Eid Al-Fitr Celebration</h3>
+                                    <p class="text-gray-200">Thousands of Muslims gather at the regional stadium to perform Eid prayers, reflecting the growth and unity of the community.</p>
+                                </div>
+                            </div>
+                            <div class="carousel-slide" style="background-image: url('https://i.postimg.cc/Y2L18bht/MUSABAQAT_1.jpg');">
+                                <div class="carousel-content">
+                                    <span class="bg-rmc-dark-green text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wide mb-2 inline-block">Competition</span>
+                                    <h3 class="text-2xl font-bold mb-2">International Qur'an Recitation</h3>
+                                    <p class="text-gray-200">Hosting talented reciters from across the globe in Kigali, promoting spiritual literacy and peaceful understanding.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leadership Board -->
+                <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12 slide-up">
+                        <h2 class="text-3xl font-bold text-rmc-black mb-2">RMC Leadership Board</h2>
+                        <div class="w-24 h-1 bg-rmc-green mx-auto rounded"></div>
+                    </div>
+
+                    <!-- Top Leaders -->
+                    <div class="flex flex-col items-center space-y-12 mb-16 slide-up" style="animation-delay: 0.2s;">
+                        <!-- Mufti -->
+                        <div class="text-center group">
+                            <img src="https://i.postimg.cc/yxnB0F4N/mufti.jpg" alt="Mufti" class="board-circle mx-auto border-rmc-green">
+                            <h3 class="mt-4 text-xl font-bold text-gray-900">Sheikh SINDAYIGAYA Mussa</h3>
+                            <p class="text-rmc-green font-semibold uppercase tracking-wide text-sm mt-1">Mufti of Rwanda</p>
+                        </div>
+                        <!-- Deputy -->
+                        <div class="text-center group">
+                            <img src="https://i.postimg.cc/cLS2dvVf/yunus.jpg" alt="Deputy Mufti" class="board-circle mx-auto border-rmc-blue" style="width: 130px; height: 130px;">
+                            <h3 class="mt-4 text-lg font-bold text-gray-900">Sheikh MUSHUMBA Yunus</h3>
+                            <p class="text-rmc-blue font-semibold uppercase tracking-wide text-sm mt-1">Deputy Mufti of Rwanda</p>
+                        </div>
+                    </div>
+
+                    <!-- Commissions -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 slide-up" style="animation-delay: 0.4s;">
+                        <div class="text-center bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
+                            <img src="https://i.postimg.cc/vZskG4pf/ALLY.jpg" alt="Ameer" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 border-2 border-gray-200">
+                            <h3 class="font-bold text-gray-900">Sheikh BAKERA Ally</h3>
+                            <p class="text-gray-500 text-sm mt-1">Ameer of Foreigner Affairs</p>
+                        </div>
+                        <div class="text-center bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
+                            <img src="https://i.postimg.cc/sgrq3MtS/ISSA.jpg" alt="Ameer" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 border-2 border-gray-200">
+                            <h3 class="font-bold text-gray-900">BICAHAGA Hamidu</h3>
+                            <p class="text-gray-500 text-sm mt-1">Ameer of Development Planning</p>
+                        </div>
+                        <div class="text-center bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
+                            <img src="https://i.postimg.cc/3xTV3kP0/ABDALLAH.jpg" alt="Ameer" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 border-2 border-gray-200">
+                            <h3 class="font-bold text-gray-900">Bwana MURENZI Abdallah</h3>
+                            <p class="text-gray-500 text-sm mt-1">Ameer of Audit Commission</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= ABOUT US PAGE ================= -->
+            <section id="about" class="page-section bg-white py-16">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-bold text-rmc-black mb-2">About RMC</h2>
+                        <div class="w-24 h-1 bg-rmc-green mx-auto rounded"></div>
+                    </div>
+
+                    <div class="prose prose-lg text-gray-700 mx-auto space-y-8">
+                        <p>The <strong>Rwanda Muslim Community (RMC)</strong>, formerly known as the Association des Musulmans au Rwanda (AMUR), is the apex body representing the Islamic faith and interests in Rwanda. Historically a marginalized group, the community has seen a significant shift in its social and political standing in the decades following the 1994 Genocide against the Tutsi.</p>
+                        <p>The RMC is the primary organization representing the Islamic faith in Rwanda. Headquartered in Kigali, it operates under the leadership of the Mufti of Rwanda.</p>
+
+                        <h3 class="text-2xl font-bold text-rmc-dark-green border-b pb-2 mt-8">Historical Context and Evolution</h3>
+                        <p>The RMC has been central to the religious and social life of Muslims in Rwanda, providing a structured framework for worship and community development. A significant part of its modern history involves the effort to make sacred texts accessible to the Rwandan people in their native language, Kinyarwanda. This journey reached a major milestone with the publication of the first translation of the Quran in 2011, refined in 2020 for higher accuracy.</p>
+                        
+                        <h3 class="text-2xl font-bold text-rmc-dark-green border-b pb-2 mt-8">Mission and Vision</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li><strong>Spiritual Guidance:</strong> Providing a "path and guidance" for the inhabitants of the world through the teachings of the Quran.</li>
+                            <li><strong>Educational Advancement:</strong> Collaborating with international partners like the Africa Development and Education Foundation (ADEF) to improve religious literacy.</li>
+                            <li><strong>Community Support:</strong> Offering religious resources, such as the translated Quran, free of charge to the public.</li>
+                        </ul>
+
+                        <h3 class="text-2xl font-bold text-rmc-dark-green border-b pb-2 mt-8">The Translation of the Holy Quran</h3>
+                        <p>In partnership with ADEF, the RMC successfully completed two major versions:</p>
+                        <ol class="list-decimal pl-5 space-y-2">
+                            <li><strong>The Older Version (2011):</strong> The first major attempt to bring meanings to Kinyarwanda speakers. Groundbreaking but required refinement.</li>
+                            <li><strong>The New Version (November 2020):</strong> A specialized committee worked from Feb 2014 to Nov 2020. Improved contextual accuracy, enhanced clarity with footnotes, and linguistic precision. Validated by over sixty scholars.</li>
+                        </ol>
+
+                        <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-rmc-blue my-8">
+                            <h4 class="font-bold text-lg mb-2">Acknowledgements</h4>
+                            <p class="text-sm">Led by Sheikh Hitimana Salim (former Mufti) and the Translation Committee led by Sheikh Mushumba Yunusu, with support from ADEF and the Islamic Cultural Center in Nyamirambo.</p>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-rmc-dark-green border-b pb-2 mt-8">Post-Genocide Growth & Future Vision</h3>
+                        <p>Since 1994, the Muslim population grew significantly as many Rwandans converted, citing the community's ethical stance during the genocide and commitment to peace. The current Strategic Plan (2024–2029) focuses on Unity, Dawah, Socio-economic development, infrastructure renovation, and governance reforms.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= PROGRAMS PAGE ================= -->
+            <section id="programs" class="page-section bg-gray-50 py-16">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-bold text-rmc-black mb-2">Our Key Programs</h2>
+                        <div class="w-24 h-1 bg-rmc-green mx-auto rounded"></div>
+                        <p class="mt-4 text-gray-600">Driving socio-economic development and spiritual growth.</p>
                     </div>
 
                     <div class="grid md:grid-cols-3 gap-8">
-                        <!-- Add Form -->
-                        <div class="md:col-span-1 bg-gray-50 p-6 rounded-lg border border-gray-200">
-                            <h3 class="font-bold text-lg mb-4 border-b pb-2"><i class="fas fa-plus-circle text-rmc-green mr-2"></i>New Content</h3>
-                            <form id="studio-form" onsubmit="handlePublish(event)" class="space-y-4">
-                                
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Content Type</label>
-                                    <select id="post-type" onchange="toggleStudioFields()" class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue font-semibold text-rmc-blue bg-blue-50">
-                                        <option value="announcement">Announcement</option>
-                                        <option value="event">Event Gallery</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700">Title</label>
-                                    <input type="text" id="post-title" required class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue">
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700">Content Description</label>
-                                    <textarea id="post-content" required rows="4" class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue"></textarea>
-                                </div>
-
-                                <!-- Dynamic fields based on Content Type -->
-                                <div id="field-single-image">
-                                    <label class="block text-xs font-medium text-gray-700">Direct Image Link</label>
-                                    <input type="url" id="post-image" placeholder="https://..." class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue">
-                                </div>
-
-                                <div id="field-multiple-images" class="hidden">
-                                    <label class="block text-xs font-medium text-gray-700">Multiple Image Links <br><span class="text-[10px] text-gray-500 font-normal">(Separate links with commas)</span></label>
-                                    <textarea id="post-images-multi" rows="3" placeholder="https://img1.jpg, https://img2.jpg" class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue"></textarea>
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700">Expiration / Event End Date</label>
-                                    <input type="date" id="post-expire" required class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue">
-                                </div>
-                                
-                                <button type="submit" id="publish-btn" class="w-full bg-rmc-blue text-white font-bold py-2 rounded text-sm hover:bg-blue-900 transition flex justify-center items-center mt-4 shadow-sm">
-                                    <i class="fas fa-paper-plane mr-2"></i> Publish Content
-                                </button>
-                            </form>
+                        <!-- Edu -->
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+                            <div class="h-48 bg-rmc-blue flex items-center justify-center text-white text-5xl">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3 text-rmc-dark-green">Education and Schools</h3>
+                                <p class="text-gray-600 text-sm">The RMC operates numerous private Islamic schools across Rwanda, such as Lycee Islamique de Rwamagana. These integrate the national curriculum (REB) with Islamic religious studies, managed via the digital "RMC Education" system.</p>
+                            </div>
                         </div>
-
-                        <!-- Manage Existing -->
-                        <div class="md:col-span-2">
-                             <h3 class="font-bold text-lg mb-4 border-b pb-2"><i class="fas fa-tasks text-gray-600 mr-2"></i>Manage Content</h3>
-                             <div class="bg-white rounded border border-gray-200 overflow-hidden shadow-sm">
-                                 <ul id="studio-list" class="divide-y divide-gray-200 max-h-[500px] overflow-y-auto">
-                                     <li class="p-4 text-center text-gray-500 text-sm">Loading data...</li>
-                                 </ul>
-                             </div>
+                        <!-- Peace -->
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+                            <div class="h-48 bg-rmc-green flex items-center justify-center text-white text-5xl">
+                                <i class="fas fa-dove"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3 text-rmc-dark-green">Peace and Reconciliation</h3>
+                                <p class="text-gray-600 text-sm">A key partner in Rwanda’s "Ndi Umunyarwanda" initiative. Muslim leaders actively serve on national interfaith commissions, and host events like the International Qur'an Recitation Competition to promote cohesion.</p>
+                            </div>
+                        </div>
+                        <!-- Social -->
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+                            <div class="h-48 bg-black flex items-center justify-center text-white text-5xl">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3 text-rmc-dark-green">Social & Cultural Life</h3>
+                                <p class="text-gray-600 text-sm">Organizing major Eid celebrations recognized nationally. Empowering Muslim youth to participate actively in monthly Umuganda (community work) focused on environmental protection and development.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-    </main>
+            <!-- ================= ANNOUNCEMENTS PAGE ================= -->
+            <section id="announcements" class="page-section bg-white py-16 min-h-screen">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
+                    <div class="flex justify-between items-end mb-12 border-b pb-4">
+                        <div>
+                            <h2 class="text-3xl font-bold text-rmc-black mb-2">Community Announcements</h2>
+                            <div class="w-24 h-1 bg-rmc-green rounded"></div>
+                            <p class="text-gray-500 mt-2">Stay updated with official news from the community.</p>
+                        </div>
+                        <div id="loading-announcements" class="hidden text-sm text-gray-500"><i class="fas fa-spinner fa-spin mr-1"></i> Syncing...</div>
+                    </div>
 
-    <footer class="bg-rmc-black text-white py-8 mt-auto" id="main-footer">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
-            <div class="flex items-center mb-4 md:mb-0">
-                <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="RMC Logo" class="h-10 w-10 rounded-full mr-3 border-2 border-gray-600">
-                <div>
-                    <span class="font-bold block">Rwanda Muslim Community</span>
-                    <span class="text-xs text-gray-400">rwandamuslimcommunity@gmail.com</span>
+                    <div id="announcements-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Dynamic Content Injected Here -->
+                        <div class="col-span-full text-center py-12 text-gray-400">Loading content...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= EVENTS PAGE ================= -->
+            <section id="events" class="page-section bg-white py-16 min-h-screen">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
+                    <div class="flex justify-between items-end mb-8 border-b pb-4">
+                        <div>
+                            <h2 class="text-3xl font-bold text-rmc-black mb-2">Events & Gatherings</h2>
+                            <div class="w-24 h-1 bg-rmc-blue rounded"></div>
+                            <p class="text-gray-500 mt-2">Discover upcoming gatherings and look back at past events.</p>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Events Container -->
+                    <h3 class="text-2xl font-bold text-rmc-dark-green mb-6 flex items-center"><i class="fas fa-calendar-check mr-3"></i> Upcoming Events</h3>
+                    <div id="upcoming-events-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                        <!-- Dynamic Content -->
+                    </div>
+
+                    <!-- Past Events Container -->
+                    <h3 class="text-2xl font-bold text-gray-600 mb-6 flex items-center"><i class="fas fa-history mr-3"></i> Past Events</h3>
+                    <div id="past-events-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 opacity-80">
+                        <!-- Dynamic Content -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= STUDIO (ADMIN) PAGE ================= -->
+            <section id="studio" class="page-section bg-gray-100 py-12 min-h-screen">
+                <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 slide-up">
+                    <div class="bg-white rounded-xl shadow-lg p-6 md:p-10 border-t-8 border-rmc-blue">
+                        <div class="flex justify-between items-center mb-8">
+                            <div>
+                                <h2 class="text-3xl font-bold text-rmc-black">RMC Studio Dashboard</h2>
+                                <p class="text-gray-500">Manage announcements and content.</p>
+                            </div>
+                            <span class="bg-blue-100 text-rmc-blue px-3 py-1 rounded-full text-sm font-bold border border-blue-200">Admin Mode</span>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <!-- Add Form -->
+                            <div class="md:col-span-1 bg-gray-50 p-6 rounded-lg border border-gray-200">
+                                <h3 class="font-bold text-lg mb-4 border-b pb-2"><i class="fas fa-plus-circle text-rmc-green mr-2"></i>New Content</h3>
+                                <form id="studio-form" onsubmit="handlePublish(event)" class="space-y-4">
+                                    
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Content Type</label>
+                                        <select id="post-type" onchange="toggleStudioFields()" class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue font-semibold text-rmc-blue bg-blue-50">
+                                            <option value="announcement">Announcement</option>
+                                            <option value="event">Event Gallery</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700">Title</label>
+                                        <input type="text" id="post-title" required class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700">Content Description</label>
+                                        <textarea id="post-content" required rows="4" class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue"></textarea>
+                                    </div>
+
+                                    <!-- Dynamic fields based on Content Type -->
+                                    <div id="field-single-image">
+                                        <label class="block text-xs font-medium text-gray-700">Direct Image Link</label>
+                                        <input type="url" id="post-image" placeholder="https://..." class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue">
+                                    </div>
+
+                                    <div id="field-multiple-images" class="hidden">
+                                        <label class="block text-xs font-medium text-gray-700">Multiple Image Links <br><span class="text-[10px] text-gray-500 font-normal">(Separate links with commas)</span></label>
+                                        <textarea id="post-images-multi" rows="3" placeholder="https://img1.jpg, https://img2.jpg" class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue"></textarea>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700">Expiration / Event End Date</label>
+                                        <input type="date" id="post-expire" required class="mt-1 w-full p-2 border border-gray-300 rounded text-sm focus:ring-rmc-blue focus:border-rmc-blue">
+                                    </div>
+                                    
+                                    <button type="submit" id="publish-btn" class="w-full bg-rmc-blue text-white font-bold py-2 rounded text-sm hover:bg-blue-900 transition flex justify-center items-center mt-4 shadow-sm">
+                                        <i class="fas fa-paper-plane mr-2"></i> Publish Content
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Manage Existing -->
+                            <div class="md:col-span-2">
+                                 <h3 class="font-bold text-lg mb-4 border-b pb-2"><i class="fas fa-tasks text-gray-600 mr-2"></i>Manage Content</h3>
+                                 <div class="bg-white rounded border border-gray-200 overflow-hidden shadow-sm">
+                                     <ul id="studio-list" class="divide-y divide-gray-200 max-h-[500px] overflow-y-auto">
+                                         <li class="p-4 text-center text-gray-500 text-sm">Loading data...</li>
+                                     </ul>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="bg-rmc-black text-white py-8 mt-auto" id="main-footer">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="RMC Logo" class="h-10 w-10 rounded-full mr-3 border-2 border-gray-600">
+                    <div>
+                        <span class="font-bold block">Rwanda Muslim Community</span>
+                        <span class="text-xs text-gray-400">rwandamuslimcommunity@gmail.com</span>
+                    </div>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter text-xl"></i> @islamrwanda</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook text-xl"></i></a>
                 </div>
             </div>
-            <div class="flex space-x-6">
-                <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter text-xl"></i> @islamrwanda</a>
-                <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook text-xl"></i></a>
+            <div class="text-center text-xs text-gray-500 mt-6 border-t border-gray-800 pt-4">
+                &copy; 2026 Rwanda Muslim Community. All rights reserved.
             </div>
-        </div>
-        <div class="text-center text-xs text-gray-500 mt-6 border-t border-gray-800 pt-4">
-            &copy; 2026 Rwanda Muslim Community. All rights reserved.
-        </div>
-    </footer>
+        </footer>
+    </div> <!-- END OF MAIN APP CONTAINER -->
 
     <!-- Firebase Logic -->
     <script type="module">
@@ -791,10 +835,12 @@
                     distSelect.innerHTML += `<option value="${dist}">${dist}</option>`;
                 });
                 distSelect.disabled = false;
-                distSelect.classList.remove('bg-gray-50');
+                distSelect.classList.remove('bg-gray-100');
+                distSelect.classList.add('bg-gray-50');
             } else {
                 distSelect.disabled = true;
-                distSelect.classList.add('bg-gray-50');
+                distSelect.classList.remove('bg-gray-50');
+                distSelect.classList.add('bg-gray-100');
             }
         };
 
@@ -810,35 +856,49 @@
                     sectSelect.innerHTML += `<option value="${sect}">${sect}</option>`;
                 });
                 sectSelect.disabled = false;
-                sectSelect.classList.remove('bg-gray-50');
+                sectSelect.classList.remove('bg-gray-100');
+                sectSelect.classList.add('bg-gray-50');
             } else {
                 sectSelect.disabled = true;
-                sectSelect.classList.add('bg-gray-50');
+                sectSelect.classList.remove('bg-gray-50');
+                sectSelect.classList.add('bg-gray-100');
             }
         };
 
-        // UI Navigation Logic
+        // UI Navigation Logic - Handles structural separation
         window.navigateTo = function(pageId) {
-            // If user is logged in, restrict them from going back to the login page
-            if (pageId === 'login' && window.RMC_STATE.currentUser !== null) {
+            // If user is logged in, strict redirect back to home if they try to access login/signup
+            if ((pageId === 'login' || pageId === 'signup') && window.RMC_STATE.currentUser !== null) {
                 pageId = 'home';
             }
 
-            // Hide all sections, display only the requested one
-            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            
-            // Toggle Navigation & Footer layout
-            const nav = document.getElementById('main-nav');
-            const footer = document.getElementById('main-footer');
-            
-            // Hide nav/footer on pure login/signup pages
+            const mainContainer = document.getElementById('main-app-container');
+            const authContainer = document.getElementById('auth-container');
+
+            // Handle switching between the Main App vs the Auth Portal
             if (pageId === 'login' || pageId === 'signup') {
-                nav.classList.add('hidden');
-                footer.classList.add('hidden');
+                // Hide main website entirely
+                mainContainer.classList.add('hidden');
+                // Show standalone auth portal
+                authContainer.classList.remove('hidden');
+                
+                // Toggle between Login and Signup screens inside the auth portal
+                document.getElementById('login').classList.toggle('hidden', pageId !== 'login');
+                document.getElementById('login').classList.toggle('active', pageId === 'login');
+                
+                document.getElementById('signup').classList.toggle('hidden', pageId !== 'signup');
+                document.getElementById('signup').classList.toggle('active', pageId === 'signup');
             } else {
-                nav.classList.remove('hidden');
-                footer.classList.remove('hidden');
+                // Show main website
+                authContainer.classList.add('hidden');
+                mainContainer.classList.remove('hidden');
+                
+                // Toggle inner sections
+                document.querySelectorAll('#main-app-container .page-section').forEach(el => el.classList.remove('active'));
+                document.getElementById(pageId).classList.add('active');
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
             }
 
             // Security check for Studio
@@ -926,16 +986,17 @@
 
                 await addDoc(usersRef, userData);
                 
-                // User requirement: Display successful registration message and redirect to landing logic (Sign in component)
+                // Show success modal & send user back to the isolated login portal
                 showModal("Success!", "Registration complete! Please sign in with your credentials.");
                 document.getElementById('signup-form').reset();
+                document.getElementById('preview-name').innerText = "---";
                 navigateTo('login');
 
             } catch (err) {
                 console.error(err);
                 showModal("Error", "Could not complete registration. Check database connection or rules.");
             } finally {
-                btn.innerHTML = '<span>Create Account</span>';
+                btn.innerHTML = '<span>Create Official Account</span>';
                 btn.disabled = false;
             }
         };
@@ -1264,6 +1325,46 @@
         }
         initCarouselLogic(); // Start on load
 
+        // Hero Fader
+        let landingBgIndex = 1;
+        setInterval(() => {
+            const bgs = [document.getElementById('bg-1'), document.getElementById('bg-2'), document.getElementById('bg-3')];
+            if(!bgs[0]) return;
+            bgs.forEach(bg => bg.style.opacity = '0');
+            landingBgIndex = (landingBgIndex % 3) + 1;
+            document.getElementById(`bg-${landingBgIndex}`).style.opacity = '1';
+        }, 5000);
+
+        // Dynamic Islamic Quotes Rotator
+        const islamicQuotes = [
+            { arabic: "إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ", translation: "\"Indeed, Allah is with the patient.\" (Quran 2:153)" },
+            { arabic: "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ", translation: "\"All praise is due to Allah, Lord of the worlds.\" (Quran 1:2)" },
+            { arabic: "خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ", translation: "\"The best among you are those who learn the Quran and teach it.\" (Hadith Bukhari)" },
+            { arabic: "إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ", translation: "\"Verily, actions are judged by intentions.\" (Hadith Bukhari & Muslim)" },
+            { arabic: "وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ", translation: "\"And He is with you wherever you are.\" (Quran 57:4)" }
+        ];
+        
+        let quoteIndex = 0;
+        setInterval(() => {
+            const quoteEl = document.getElementById('daily-quote');
+            const transEl = document.getElementById('daily-translation');
+            if(!quoteEl || !transEl) return;
+            
+            // Trigger Fade Out
+            quoteEl.classList.add('fade-out');
+            transEl.classList.add('fade-out');
+            
+            setTimeout(() => {
+                // Change Text Content
+                quoteIndex = (quoteIndex + 1) % islamicQuotes.length;
+                quoteEl.innerText = islamicQuotes[quoteIndex].arabic;
+                transEl.innerText = islamicQuotes[quoteIndex].translation;
+                
+                // Trigger Fade In
+                quoteEl.classList.remove('fade-out');
+                transEl.classList.remove('fade-out');
+            }, 1000); // Matches the CSS transition duration
+        }, 8000);
     </script>
 </body>
 </html>
