@@ -329,10 +329,13 @@
                         <div class="w-24 h-1 bg-blue-400 mx-auto rounded"></div>
                         <p class="text-gray-500 mt-2 text-sm">Stay connected with our real-time updates.</p>
                     </div>
-                    <!-- Twitter Embed Container -->
-                    <div class="bg-white rounded-xl shadow-md p-4 flex justify-center overflow-hidden max-h-[600px] overflow-y-auto">
-                        <a class="twitter-timeline" data-width="600" data-theme="light" href="https://twitter.com/islamrwanda?ref_src=twsrc%5Etfw">Tweets by islamrwanda</a> 
-                        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                    <!-- Custom Twitter Feed Container -->
+                    <div id="custom-tweets-container" class="space-y-4">
+                        <!-- Loading State -->
+                        <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center justify-center text-gray-500 min-h-[200px]">
+                            <div class="w-8 h-8 border-4 border-gray-200 border-t-blue-400 rounded-full animate-spin mb-4"></div>
+                            <p class="font-medium">Loading latest posts...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1061,6 +1064,72 @@
             // In a production environment this could use IntersectionObserver
         }
         animateCounters();
+
+        // Custom X (Twitter) Feed Logic linking to Netlify Function
+        async function fetchLatestTweets() {
+            const container = document.getElementById('custom-tweets-container');
+            if (!container) return;
+
+            try {
+                // This calls the Netlify function securely on the server
+                const response = await fetch('/.netlify/functions/get-tweets');
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch from backend');
+                }
+
+                const tweets = await response.json();
+                container.innerHTML = ''; // Clear loading spinner
+
+                if (!tweets || tweets.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center text-gray-500">
+                            <p>No recent posts found.</p>
+                        </div>`;
+                    return;
+                }
+
+                tweets.forEach(tweet => {
+                    const date = new Date(tweet.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    
+                    // Format tweet text (basic hashtag highlighting)
+                    const formattedText = tweet.text.replace(/#(\w+)/g, '<span class="text-blue-500 hover:underline cursor-pointer">#$1</span>');
+
+                    const tweetHtml = `
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition duration-300">
+                            <div class="flex items-start">
+                                <img src="https://i.postimg.cc/d1VvFwWH/RMC-LOGO.jpg" alt="RMC" class="w-12 h-12 rounded-full border border-gray-200 mr-4 mt-1 object-cover">
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <div class="flex flex-col sm:flex-row sm:items-center">
+                                            <span class="font-bold text-gray-900 mr-2">Islam Rwanda</span>
+                                            <span class="text-gray-500 text-sm">@islamrwanda</span>
+                                        </div>
+                                        <i class="fab fa-twitter text-blue-400 text-xl"></i>
+                                    </div>
+                                    <p class="text-gray-800 mt-2 leading-relaxed whitespace-pre-wrap">${formattedText}</p>
+                                    <div class="text-gray-400 text-xs mt-3 font-medium">
+                                        ${date}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += tweetHtml;
+                });
+
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-xl shadow-sm border border-red-100 p-6 text-center text-red-500">
+                        <i class="fas fa-exclamation-triangle mb-2 text-2xl"></i>
+                        <p>Failed to load the latest posts. Please make sure the X_BEARER_TOKEN is set in Netlify Environment Variables.</p>
+                    </div>`;
+                console.error('Error fetching tweets:', error);
+            }
+        }
+        
+        // Load tweets when the home section is active (or immediately on load)
+        document.addEventListener('DOMContentLoaded', fetchLatestTweets);
 
         // Setup Initial Language
         changeLanguage('en');
